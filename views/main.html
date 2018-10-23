@@ -1,0 +1,30 @@
+
+{{ define "main" }}
+<!-- <% include ./sidebar.html %> -->
+{{ template "sidebar" .}}
+<div id="content">
+    <div class="panel">
+      <div class="header">
+        <a href="/tab=all" class="topic-tab current-tab">全部</a>        
+        <a href="/tab=good" class="topic-tab ">精华</a> 
+        <a href="/tab=share" class="topic-tab ">分享</a>
+        <a href="/tab=ask" class="topic-tab ">问答</a>
+        <a href="/tab=job" class="topic-tab ">招聘</a>
+      </div>
+      {{ if .topics}}
+      <div class="inner no-padding">
+        <!-- <%- include('./topic/list.html', {
+          topics: topics,
+          pages: pages,
+          current_page: current_page,
+          base: '/'
+        }) %> -->
+      </div>
+      {{else}}
+      <div class="inner">
+        <p>无话题</p>
+      </div>
+      {{end}}
+    </div>
+</div>
+  {{end}}

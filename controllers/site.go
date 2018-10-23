@@ -10,7 +10,7 @@ import (
 
 func Index(c *gin.Context) {
 	//c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-	c.HTML(http.StatusOK, "layout.html", gin.H{
+	c.HTML(http.StatusOK, "index", gin.H{
 		"title": "布局页面",
 		"aa":    "aa",
 		"config": gin.H{
