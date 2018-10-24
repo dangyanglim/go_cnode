@@ -1,0 +1,28 @@
+{{ define "getstart" }}
+{{ template "header" .}}
+<div id='main'>
+  {{ template "sidebar" .}}
+  <div id='content'>
+    <div class='panel'>
+      <div class='header'>
+        <ul class='breadcrumb'>
+          <li><a href='/'>主页</a><span class='divider'>/</span></li>
+          <li class='active'>Node.js 新手入门</li>
+        </ul>
+      </div>
+      <div class='inner topic'>
+        <div class="topic_content">
+          <div class="markdown-text">
+            {{.getstart}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ template "footer" .}}
+{{ end }}
+
+
+
+

@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	. "github.com/dangyanglim/go_cnode/apis"
-	"github.com/dangyanglim/go_cnode/controllers"
+	"github.com/dangyanglim/go_cnode/controllers/site"
+	"github.com/dangyanglim/go_cnode/controllers/sign"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +18,12 @@ func initRouter() *gin.Engine {
 	router.StaticFS("/public", http.Dir("./public"))
 	router.StaticFile("/favicon.ico", "./public/images/cnode_icon_32.png")
 	router.GET("/", site.Index)
-
+	router.GET("/about", site.About)
+	router.GET("/signup", sign.Signup)
+	router.GET("/signin", sign.Signin)
+	router.GET("/search_pass", sign.SearchPass)
+	router.GET("/api", site.Api)
+	router.GET("/getstart", site.Getstart)
 	router.POST("/person", AddPersonApi)
 
 	router.GET("/persons", GetPersonsApi)

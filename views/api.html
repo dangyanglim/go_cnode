@@ -1,0 +1,28 @@
+{{ define "api" }}
+{{ template "header" .}}
+<div id='main'>
+  
+  <div id='content'>
+    <div class='panel'>
+      <div class='header'>
+        <ul class='breadcrumb'>
+          <li><a href='/'>主页</a><span class='divider'>/</span></li>
+          <li class='active'>API</li>
+        </ul>
+      </div>
+      <div class='inner topic'>
+        <div class="topic_content">
+          <div class="markdown-text">
+            {{.api}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ template "footer" .}}
+{{ end }}
+
+
+
+
