@@ -5,11 +5,32 @@
 <div id="content">
     <div class="panel">
       <div class="header">
-        <a href="/tab=all" class="topic-tab current-tab">全部</a>        
-        <a href="/tab=good" class="topic-tab ">精华</a> 
-        <a href="/tab=share" class="topic-tab ">分享</a>
-        <a href="/tab=ask" class="topic-tab ">问答</a>
-        <a href="/tab=job" class="topic-tab ">招聘</a>
+        
+        {{ if eq .tab "all"}} 
+        <a href="/?tab=all" class="topic-tab current-tab">全部</a>
+        {{else}}
+        <a href="/?tab=all" class="topic-tab">全部</a>
+        {{end}}
+        {{ if eq .tab "good"}}     
+        <a href="/?tab=good" class="topic-tab current-tab">精华</a>
+        {{else}}
+        <a href="/?tab=good" class="topic-tab ">精华</a>
+        {{end}}
+        {{ if eq .tab "share"}}
+        <a href="/?tab=share" class="topic-tab current-tab">分享</a>
+        {{else}}
+        <a href="/?tab=share" class="topic-tab ">分享</a>
+        {{end}}
+        {{ if eq .tab "ask"}}
+        <a href="/?tab=ask" class="topic-tab current-tab">问答</a>
+        {{else}}
+        <a href="/?tab=ask" class="topic-tab ">问答</a>
+        {{end}}
+        {{ if eq .tab "job"}}
+        <a href="/?tab=job" class="topic-tab current-tab">招聘</a>
+        {{else}}
+        <a href="/?tab=job" class="topic-tab ">招聘</a>
+        {{end}}
       </div>
       {{ if .topics}}
       <div class="inner no-padding">

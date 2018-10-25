@@ -2,10 +2,14 @@ package main
 
 import (
 	db "github.com/dangyanglim/go_cnode/database"
+	//"log"
 )
 
 func main() {
 	defer db.SqlDB.Close()
+	defer db.MogSession.Close()
+ 
+	
 	router := initRouter()
 
 	// config := cors.DefaultConfig()

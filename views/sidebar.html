@@ -7,11 +7,11 @@
       <span class='col_fade'>个人信息</span>
     </div>
     <div class='inner'>
-      <!-- <%- include('./user/card.html', { user: typeof user === 'undefined' ? current_user : user }) %> -->
+        {{ template "card" .}}
     </div>
     {{else}}
     <div class='inner'>
-      <!-- <p><%= config.description %></p> -->
+      <p>{{ .config.description }}</p>
       <div>
         您可以
         <a href='/signin'>登录</a>

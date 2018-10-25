@@ -4,12 +4,15 @@ import (
  "database/sql"
  _ "github.com/go-sql-driver/mysql"
  "log"
+ "gopkg.in/mgo.v2"
 )
 
 var SqlDB *sql.DB
-
+var MogSession *mgo.Session
+//var mgodb *mgo.Database
 func init() {
  var err error
+ var mgoerr error
  SqlDB, err = sql.Open("mysql", "root@tcp(127.0.0.1:3306)/test?parseTime=true")
  if err != nil {
   log.Fatal(err.Error())
@@ -18,5 +21,15 @@ func init() {
  if err != nil {
   log.Fatal(err.Error())
  }
+ MogSession, mgoerr = mgo.Dial("120.78.15.36:27017")
+ if mgoerr != nil {
+     panic(mgoerr)
+ }
+ MogSession.SetMode(mgo.Monotonic, true)
+//  defer mogSession.Close() 
+//  session.SetMode(mgo.Monotonic, true)
+//  mgodb = session.DB("egg_cnode")
+//  countNum, _ :=mgodb.C("users").Count()
+//  log.Println(countNum)
 }
 

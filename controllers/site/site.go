@@ -2,11 +2,13 @@ package site
 
 import (
 	"net/http"
-
+  "log"
 	//. "github.com/dangyanglim/go_cnode/models"
 	"html/template"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/russross/blackfriday.v2"
+  "gopkg.in/russross/blackfriday.v2"
+  db "github.com/dangyanglim/go_cnode/database"
+  
 
 )
 
@@ -243,10 +245,24 @@ js
     建议各移动端应用使用手机扫码的形式登录，验证使用 /accesstoken 接口，登录后长期保存 accessToken。	
 `)
 func Index(c *gin.Context) {
-	//c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+  //c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+  var no_reply_topics =[]string{"2","2"};
+  var tops =[]string{"2","2"};
+  tab:=c.Request.FormValue("tab")
+  
+  if tab==""{
+    tab="all"
+  }
+  log.Println(tab)
+  mgodb := db.MogSession.DB("egg_cnode")
+  countNum, _ :=mgodb.C("users").Count()
+  log.Println(countNum)  
+  
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title": "布局页面",
-		"aa":    "aa",
+    "no_reply_topics":no_reply_topics,
+    "tops":tops,
+    "tab":tab,
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
 		},
@@ -333,7 +349,10 @@ func About(c *gin.Context) {
 	output := template.HTML(blackfriday.Run(about))
 	c.HTML(http.StatusOK, "about", gin.H{
 		"title": "布局页面",
-		"about":    output,
+    "about":    output,
+		"config": gin.H{
+			"description": "CNode：Node.js专业中文社区",
+		},   
 	})
 }
 
@@ -342,7 +361,10 @@ func Api(c *gin.Context) {
    output := template.HTML(blackfriday.Run(api))
    c.HTML(http.StatusOK, "api", gin.H{
 	   "title": "布局页面",
-	   "api":    output,
+     "api":    output,
+     "config": gin.H{
+			"description": "CNode：Node.js专业中文社区",
+		},     
    })
 }
 func Getstart(c *gin.Context) {
@@ -350,7 +372,10 @@ func Getstart(c *gin.Context) {
 	output := template.HTML(blackfriday.Run(getstart))
 	c.HTML(http.StatusOK, "getstart", gin.H{
 		"title": "布局页面",
-		"getstart":    output,
+    "getstart":    output,
+		"config": gin.H{
+			"description": "CNode：Node.js专业中文社区",
+		},    
 	})
  }
 
