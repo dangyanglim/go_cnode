@@ -2,7 +2,7 @@
 <div id='sidebar'>
 
   <div class='panel'>
-    {{ if .user }}
+    {{ if .user.Loginname }}
     <div class='header'>
       <span class='col_fade'>个人信息</span>
     </div>
@@ -28,7 +28,7 @@
     {{end}}
   </div>
 
-  {{ if .current_user }}
+  {{ if .user.Loginname }}
   <div class="panel">
     <div class='inner'>
       <a href='/topic/create' id='create_topic_btn'>

@@ -3,14 +3,22 @@
 
 <div class='user_card'>
   <div>
+      <a class='user_avatar' href="/user/{{.user.Loginname}} ">
+        <img src="{{.user.Avatar}}" title="{{.user.Loginname}}"/>
+      </a>
+      <span class='user_name'><a class='dark' > {{.user.Loginname}}</a></span>    
     <div class='board clearfix'>
       <div class='floor'>
-        
+          <span class='big'>积分:  {{.user.Score }} </span>
       </div>
     </div>
     <div class="space clearfix"></div>
     <span class="signature">
+        
 
+           “ 这家伙很懒，什么个性签名都没有留下。”
+       
+        
     </span>
   </div>
 </div>

@@ -7,8 +7,9 @@ import (
 	"html/template"
 	"github.com/gin-gonic/gin"
   "gopkg.in/russross/blackfriday.v2"
-  db "github.com/dangyanglim/go_cnode/database"
-  
+  //db "github.com/dangyanglim/go_cnode/database"
+  "github.com/tommy351/gin-sessions"
+  "github.com/dangyanglim/go_cnode/mgoModels"
 
 )
 
@@ -244,6 +245,7 @@ js
     用户登录后，在设置页面可以看到自己的 accessToken。
     建议各移动端应用使用手机扫码的形式登录，验证使用 /accesstoken 接口，登录后长期保存 accessToken。	
 `)
+var userModel = new(models.UserModel)
 func Index(c *gin.Context) {
   //c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
   var no_reply_topics =[]string{"2","2"};
@@ -253,15 +255,25 @@ func Index(c *gin.Context) {
   if tab==""{
     tab="all"
   }
-  log.Println(tab)
-  mgodb := db.MogSession.DB("egg_cnode")
-  countNum, _ :=mgodb.C("users").Count()
-  log.Println(countNum)  
+  log.Println(tab) 
+  session := sessions.Get(c)
+  var name string
+  user:=models.User{}
+  var err error
+  log.Println(user)
+  if nil!=session.Get("loginname"){
+    name=session.Get("loginname").(string)
+    user,err=userModel.GetUserByName(name)
+  }
+  log.Println(err)
   
+  log.Println(name)
+  log.Println(user)  
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title": "布局页面",
     "no_reply_topics":no_reply_topics,
     "tops":tops,
+    "user":user,
     "tab":tab,
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
@@ -346,10 +358,20 @@ CNode 的 SLA 保证是，一个9，即 90.000000%。
 另，安卓用户同时可选择：https://github.com/TakWolf/CNode-Material-Design ，这是 Java 原生开发的安卓客户端。		
 `)
 func About(c *gin.Context) {
-	output := template.HTML(blackfriday.Run(about))
+  output := template.HTML(blackfriday.Run(about))
+  session := sessions.Get(c)
+  var name string
+  user:=models.User{}
+  //var err error
+  log.Println(user)
+  if nil!=session.Get("loginname"){
+    name=session.Get("loginname").(string)
+    user,_=userModel.GetUserByName(name)
+  }
 	c.HTML(http.StatusOK, "about", gin.H{
 		"title": "布局页面",
     "about":    output,
+    "user":user,
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
 		},   
@@ -359,9 +381,19 @@ func About(c *gin.Context) {
 func Api(c *gin.Context) {
 
    output := template.HTML(blackfriday.Run(api))
+   session := sessions.Get(c)
+   var name string
+   user:=models.User{}
+   //var err error
+   log.Println(user)
+   if nil!=session.Get("loginname"){
+     name=session.Get("loginname").(string)
+     user,_=userModel.GetUserByName(name)
+   } 
    c.HTML(http.StatusOK, "api", gin.H{
 	   "title": "布局页面",
      "api":    output,
+     "user":user,
      "config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
 		},     
@@ -369,10 +401,21 @@ func Api(c *gin.Context) {
 }
 func Getstart(c *gin.Context) {
 
-	output := template.HTML(blackfriday.Run(getstart))
+  output := template.HTML(blackfriday.Run(getstart))
+  session := sessions.Get(c)
+  var name string
+  user:=models.User{}
+  //var err error
+  log.Println(user)
+  if nil!=session.Get("loginname"){
+    name=session.Get("loginname").(string)
+    user,_=userModel.GetUserByName(name)
+  }
+
 	c.HTML(http.StatusOK, "getstart", gin.H{
 		"title": "布局页面",
     "getstart":    output,
+    "user":user,
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
 		},    

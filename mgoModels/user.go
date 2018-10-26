@@ -15,6 +15,7 @@ type User struct {
 	Email string `json:"email" `
 	Avatar string `json:"avatar" `
 	AccessToken    string `json:"accessToken"`
+	Score	uint `json:"score"`
 }
 type UserModel struct{}
 func (p *UserModel) GetUserByName(name string)(user User,err error){

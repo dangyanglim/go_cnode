@@ -50,11 +50,11 @@
             </form>
             <ul class='nav pull-right'>
               <li><a href='/'>首页</a></li>
-              {{ if .current_user}}
+              {{ if .user.Loginname}}
               <li>
                   <a href='/my/messages'>
-                    {{if .current_user.messages_count}}
-                      <span class='big messages_count'>{{.current_user.messages_count }}</span>
+                    {{if .cuuser.Messages_count}}
+                      <span class='big messages_count'>{{.cuuser.Messages_count }}</span>
                     {{end}}
                     未读消息
                   </a>
@@ -64,7 +64,7 @@
               <li><a href='/api'>API</a></li>
               <li><a href='/about'>关于</a></li>
 
-              {{ if .current_user}}
+              {{ if .user.Loginname}}
               <li><a href='/setting'>设置</a></li>
               <li>
                 <a href='/signout' data-method="post" rel="nofollow">退出</a>

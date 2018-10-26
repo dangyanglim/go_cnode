@@ -21,9 +21,15 @@
 			"revisionTime": "2018-01-25T05:47:45Z"
 		},
 		{
+			"checksumSHA1": "cSVt/zeK4fogPsmi77TIikn+n6g=",
+			"path": "github.com/tommy351/gin-sessions",
+			"revision": "353060947eb6549deb9e15229c73ed37931acf5f",
+			"revisionTime": "2015-06-17T14:18:53Z"
+		},
+		{
 			"path": "google.golang.org/appengine/cloudsql",
 			"revision": ""
 		}
 	],
-	"rootPath": "github.com/dangyanglim/amr"
+	"rootPath": "github.com/dangyanglim/go_cnode"
 }

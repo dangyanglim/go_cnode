@@ -8,11 +8,14 @@ import (
 	"github.com/dangyanglim/go_cnode/controllers/sign"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/tommy351/gin-sessions"
 )
 
 func initRouter() *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.Default())
+	store := sessions.NewCookieStore([]byte("secret123"))
+	router.Use(sessions.Middleware("my_session", store))
 	//gin.SetMode(gin.ReleaseMode)
 	//router.LoadHTMLGlob("views/user/*")
 	router.LoadHTMLGlob("views/*")
@@ -21,7 +24,9 @@ func initRouter() *gin.Engine {
 	router.GET("/", site.Index)
 	router.GET("/about", site.About)
 	router.GET("/signup", sign.Signup)
+	router.POST("/signout", sign.Signout)
 	router.GET("/signin", sign.Signin)
+	router.GET("/setting", sign.Setting)
 	router.POST("/passport/local", sign.Login)
 	router.GET("/search_pass", sign.SearchPass)
 	router.GET("/api", site.Api)
