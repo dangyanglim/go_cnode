@@ -1,0 +1,40 @@
+{{ define "message_index" }}
+{{ template "header" .}}
+<div id='main'>
+    {{ template "sidebar" .}}
+    <div id='content'>
+        <div class='panel'>
+          <div class='header'>
+            <ul class='breadcrumb'>
+              <li><a href='/'>主页</a><span class='divider'>/</span></li>
+              <li class='active'>新消息</li>
+            </ul>
+          </div>
+          {{if .hasnot_read_messages}}
+            <!-- <% hasnot_read_messages.map((message, index) => { %>
+              <%- include('./message.html', { message, index }) %>
+            <%}) %> -->
+          {{else}}
+          <div class='inner'>
+            <p>无消息</p>
+          </div>
+          {{end}}
+        </div>
+        <div class='panel'>
+          <div class='header'>
+            <span class='col_fade'>过往信息</span>
+          </div>
+          {{if .has_read_messages}}
+          <!-- <% has_read_messages.map((message, index) => { %>
+            <%- include('./message.html', { message, index }) %>
+          <%}) %> -->
+          {{else}}
+          <div class='inner'>
+            <p>无消息</p>
+          </div>
+          {{end}}
+        </div>
+      </div>    
+</div>
+{{ template "footer" .}}
+{{ end }}

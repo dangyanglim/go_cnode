@@ -1,12 +1,14 @@
-package sign
+package mail
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"net/smtp"
 	"regexp"
+	"strings"
 
 	"github.com/dangyanglim/go_cnode/mgoModels"
-	"github.com/dangyanglim/go_cnode/service/mail"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
 )
@@ -157,7 +159,6 @@ func Signup(c *gin.Context) {
 		})
 		return
 	}
-	mail.SendActiveMail(email, "aaa", loginname)
 	c.HTML(http.StatusOK, "signup", gin.H{
 		"title": "布局页面",
 		// "user":  user,
@@ -169,4 +170,23 @@ func Signup(c *gin.Context) {
 		},
 	})
 
+}
+func SendActiveMail(who string, token string, name string) {
+	auth := smtp.PlainAuth("", "dangyanglim@qq.com", "uicmeimalcnybgdj", "smtp.qq.com")
+	to := []string{who}
+	nickname := name
+	user := "dangyanglim@qq.com"
+	subject := "Go_Cnode社区账号激活"
+	content_type := "Content-Type: text/html; charset=UTF-8"
+	body := "<p>您好：" + name + "</p>" +
+		"<p>我们收到您在Go_Cnode社区的注册信息，请点击下面的链接来激活帐户：</p>" +
+		"<a href  ='http://127.0.0.1:9031/active_account?key=" + token + "&name=" + name + "'>激活链接</a>" +
+		"<p>若您没有在Go_Cnode社区填写过注册信息，说明有人滥用了您的电子邮箱，请删除此邮件，我们对给您造成的打扰感到抱歉。</p>" +
+		"<p>Go_Cnode社区 谨上。</p>"
+	msg := []byte("To: " + strings.Join(to, ",") + "\r\nFrom: " + nickname +
+		"<" + user + ">\r\nSubject: " + subject + "\r\n" + content_type + "\r\n\r\n" + body)
+	err := smtp.SendMail("smtp.qq.com:25", auth, user, to, msg)
+	if err != nil {
+		fmt.Printf("send mail error: %v", err)
+	}
 }
