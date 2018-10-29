@@ -246,14 +246,25 @@ js
     建议各移动端应用使用手机扫码的形式登录，验证使用 /accesstoken 接口，登录后长期保存 accessToken。	
 `)
 var userModel = new(models.UserModel)
+var topicModel = new(models.TopicModel)
 func Index(c *gin.Context) {
   //c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
   var no_reply_topics =[]string{"2","2"};
+
   var tops =[]string{"2","2"};
   tab:=c.Request.FormValue("tab")
-  
+  var queryTab string
   if tab==""{
     tab="all"
+  }
+  if tab=="all"{
+    
+  }else{
+    queryTab=tab
+  }
+  var good bool
+  if tab=="good"{
+    good=true
   }
   log.Println(tab) 
   session := sessions.Get(c)
@@ -266,15 +277,39 @@ func Index(c *gin.Context) {
     user,err=userModel.GetUserByName(name)
   }
   log.Println(err)
-  
-  log.Println(name)
-  log.Println(user)  
+  topics:=make([]models.Topic,10)
+
+  log.Println(queryTab)
+  log.Println(good)
+  topics,_=topicModel.GetTopicByQuery(queryTab,good)
+  log.Println(topics)
+  base_url:="/?tab="+tab+"&page="
+  current_page:=1
+  pages:=1
+  var page_start int
+  var page_end int
+  if (current_page-2)>0{
+    page_start=current_page-2
+  }else{
+    page_start=1
+  }
+  if(page_start+4)>pages{
+    page_end=pages
+  }else{
+    page_end=page_start+4
+  }
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title": "布局页面",
     "no_reply_topics":no_reply_topics,
     "tops":tops,
     "user":user,
+    "base_url":base_url,
+    "current_page":current_page,
+    "topics":topics,
     "tab":tab,
+    "pages":pages,
+    "page_start":page_start,
+    "page_end":page_end,
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
 		},

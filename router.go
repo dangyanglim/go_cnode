@@ -5,6 +5,7 @@ import (
 
 	. "github.com/dangyanglim/go_cnode/apis"
 	"github.com/dangyanglim/go_cnode/controllers/sign"
+	"github.com/dangyanglim/go_cnode/controllers/topic"
 	"github.com/dangyanglim/go_cnode/controllers/site"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,7 @@ func initRouter() *gin.Engine {
 	router.GET("/signin", sign.Signin)
 	router.GET("/setting", sign.Setting)
 	router.GET("/my/messages", sign.Message)
+	router.GET("/topic/create", topic.TopicCreate)
 	router.POST("/passport/local", sign.Login)
 	router.GET("/search_pass", sign.SearchPass)
 	router.GET("/api", site.Api)

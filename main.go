@@ -18,5 +18,5 @@ func main() {
 	// config.AllowMethods = []string{"*"}
 	// config.AllowHeaders = []string{"*"}
 	//router.Use(cors.Default())
-	router.Run(":9031")
+	router.Run(":9035")
 }
