@@ -157,6 +157,23 @@ func Signup(c *gin.Context) {
 		})
 		return
 	}
+	user, err := userModel.GetUserByNameOrEmail(loginname, email)
+	log.Println(user)
+	log.Println(err)
+	if err == nil {
+		c.HTML(http.StatusOK, "signup", gin.H{
+			"title": "布局页面",
+			// "user":  user,
+			"error":     "用户名或邮箱已被使用",
+			"loginname": loginname,
+			"email":     email,
+			"config": gin.H{
+				"description": "CNode：Node.js专业中文社区",
+			},
+		})
+		return
+	}
+	userModel.NewAndSave(loginname, loginname, email, pass, "aa", true)
 	mail.SendActiveMail(email, "aaa", loginname)
 	c.HTML(http.StatusOK, "signup", gin.H{
 		"title": "布局页面",
