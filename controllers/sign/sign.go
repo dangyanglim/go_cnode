@@ -9,6 +9,7 @@ import (
 	"github.com/dangyanglim/go_cnode/service/mail"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var userModel = new(models.UserModel)
@@ -40,8 +41,16 @@ func Signout(c *gin.Context) {
 
 func Login(c *gin.Context) {
 	name := c.Request.FormValue("name")
-	//pass := c.Request.FormValue("pass")
+	pass := c.Request.FormValue("pass")
+
 	user, _ := userModel.GetUserByName(name)
+	err := bcrypt.CompareHashAndPassword([]byte(user.Pass), []byte(pass))
+	log.Println(err)
+	if err != nil {
+
+		c.Redirect(301, "/")
+		return
+	}
 	session := sessions.Get(c)
 	session.Set("loginname", user.Loginname)
 	session.Set("accessToken", user.AccessToken)
