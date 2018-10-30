@@ -10,6 +10,7 @@ import (
   //db "github.com/dangyanglim/go_cnode/database"
   "github.com/tommy351/gin-sessions"
   "github.com/dangyanglim/go_cnode/mgoModels"
+  "strconv"
 
 )
 
@@ -284,8 +285,8 @@ func Index(c *gin.Context) {
   topics,_=topicModel.GetTopicByQuery(queryTab,good)
   log.Println(topics)
   base_url:="/?tab="+tab+"&page="
-  current_page:=1
-  pages:=1
+  var current_page int=1
+  var pages int=1
   var page_start int
   var page_end int
   if (current_page-2)>0{
@@ -298,11 +299,17 @@ func Index(c *gin.Context) {
   }else{
     page_end=page_start+4
   }
+  pagesArray:=[]string{}
+  var i int
+  for i =0;i<pages;i++{
+    pagesArray=append(pagesArray,strconv.Itoa(i))
+  }
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title": "布局页面",
     "no_reply_topics":no_reply_topics,
     "tops":tops,
     "user":user,
+    "pagesArray":pagesArray,
     "base_url":base_url,
     "current_page":current_page,
     "topics":topics,
