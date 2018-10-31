@@ -180,7 +180,7 @@ func SendActiveMail(who string, token string, name string) {
 	content_type := "Content-Type: text/html; charset=UTF-8"
 	body := "<p>您好：" + name + "</p>" +
 		"<p>我们收到您在Go_Cnode社区的注册信息，请点击下面的链接来激活帐户：</p>" +
-		"<a href  ='http://127.0.0.1:9031/active_account?key=" + token + "&name=" + name + "'>激活链接</a>" +
+		"<a href  ='http://fenghuangyu.cn:9035/active_account?key=" + token + "&name=" + name + "'>激活链接</a>" +
 		"<p>若您没有在Go_Cnode社区填写过注册信息，说明有人滥用了您的电子邮箱，请删除此邮件，我们对给您造成的打扰感到抱歉。</p>" +
 		"<p>Go_Cnode社区 谨上。</p>"
 	msg := []byte("To: " + strings.Join(to, ",") + "\r\nFrom: " + nickname +

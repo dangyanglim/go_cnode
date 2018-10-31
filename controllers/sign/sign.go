@@ -46,7 +46,7 @@ func Login(c *gin.Context) {
 	user, _ := userModel.GetUserByName(name)
 	err := bcrypt.CompareHashAndPassword([]byte(user.Pass), []byte(pass))
 	log.Println(err)
-	if err != nil {
+	if err != nil || !user.Active {
 
 		c.Redirect(301, "/")
 		return
@@ -182,7 +182,7 @@ func Signup(c *gin.Context) {
 		})
 		return
 	}
-	userModel.NewAndSave(loginname, loginname, email, pass, "aa", true)
+	userModel.NewAndSave(loginname, loginname, email, pass, "aa", false)
 	mail.SendActiveMail(email, "aaa", loginname)
 	c.HTML(http.StatusOK, "signup", gin.H{
 		"title": "布局页面",
@@ -196,4 +196,28 @@ func Signup(c *gin.Context) {
 	})
 
 }
+func ActiveAccount(c *gin.Context) {
+	loginname := c.Request.FormValue("name")
 
+	user := models.User{}
+	var err error
+
+	user, err = userModel.GetUserByName(loginname)
+	if err != nil {
+		c.HTML(http.StatusOK, "notify", gin.H{
+			"error": "用户不存在",
+			"config": gin.H{
+				"description": "CNode：Node.js专业中文社区",
+			},
+		})
+		return
+	}
+	userModel.ActiveUserByName(loginname)
+	log.Println(user)
+	c.HTML(http.StatusOK, "notify", gin.H{
+		"success": "帐号已被激活，请登录",
+		"config": gin.H{
+			"description": "CNode：Node.js专业中文社区",
+		},
+	})
+}

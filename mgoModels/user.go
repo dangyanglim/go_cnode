@@ -1,7 +1,8 @@
 package models
 
 import (
-	//"log"
+	"log"
+
 	db "github.com/dangyanglim/go_cnode/database"
 	"github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -11,21 +12,34 @@ import (
 //"log"
 
 type User struct {
-	Name        string `json:"name"`
-	Loginname   string `json:"loginname" `
-	Pass        string `json:"pass" `
-	Email       string `json:"email" `
-	Avatar      string `json:"avatar" `
-	AccessToken string `json:"accessToken"`
-	Score       uint   `json:"score"`
-	Active      bool   `json:"active"`
+	Id          bson.ObjectId `bson:"_id"`
+	Name        string        `json:"name"`
+	Loginname   string        `json:"loginname" `
+	Pass        string        `json:"pass" `
+	Email       string        `json:"email" `
+	Avatar      string        `json:"avatar" `
+	AccessToken string        `json:"accessToken"`
+	Score       uint          `json:"score"`
+	Active      bool          `json:"active"`
 }
 type UserModel struct{}
 
+func (p *UserModel) GetUserById(id string) (user User, err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+	log.Println(id)
+	objectId := bson.ObjectIdHex(id)
+	err = mgodb.C("users").Find(bson.M{"_id": objectId}).One(&user)
+	return user, err
+}
 func (p *UserModel) GetUserByName(name string) (user User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	err = mgodb.C("users").Find(bson.M{"name": name}).One(&user)
 	return user, err
+}
+func (p *UserModel) ActiveUserByName(name string) (err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+	err = mgodb.C("users").Update(bson.M{"name": name}, bson.M{"$set": bson.M{"active": true}})
+	return err
 }
 func (p *UserModel) GetUserByNameOrEmail(name string, email string) (user User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
@@ -37,6 +51,7 @@ func (p *UserModel) NewAndSave(name string, loginname string, email string, pass
 	mgodb := db.MogSession.DB("egg_cnode")
 	u2, _ := uuid.NewV4()
 	user := User{
+		Id:          bson.NewObjectId(),
 		Name:        name,
 		Loginname:   loginname,
 		Pass:        string(hashPass),
@@ -46,5 +61,6 @@ func (p *UserModel) NewAndSave(name string, loginname string, email string, pass
 		AccessToken: u2.String(),
 	}
 	err = mgodb.C("users").Insert(&user)
+	log.Println(err)
 	return err
 }
