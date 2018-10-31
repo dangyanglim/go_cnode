@@ -196,3 +196,4 @@ func Signup(c *gin.Context) {
 	})
 
 }
+

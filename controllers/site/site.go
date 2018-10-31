@@ -301,7 +301,7 @@ func Index(c *gin.Context) {
   }
   pagesArray:=[]string{}
   var i int
-  for i =0;i<pages;i++{
+  for i =1;i<pages+1;i++{
     pagesArray=append(pagesArray,strconv.Itoa(i))
   }
 	c.HTML(http.StatusOK, "index", gin.H{

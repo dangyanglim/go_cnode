@@ -9,6 +9,7 @@ import (
 //"log"
 
 type Topic struct {
+	Id bson.ObjectId `bson:"_id"`
 	Title        string    `json:"title"`
 	Content string `json:"content" `
 	Author_id    string `json:"author_id" `
@@ -16,7 +17,7 @@ type Topic struct {
 	Good bool `json:"good" `
 	Lock    bool `json:"lock"`
 	Reply_count	uint `json:"reply_count"`
-	visit_count	uint `json:"visit_count"`
+	Visit_count	uint `json:"visit_count"`
 	Collect_count	uint `json:"collect_count"`
 	Create_at	string `json:"create_at"`
 	Update_at string `json:"update_at"`
@@ -24,7 +25,7 @@ type Topic struct {
 	Last_reply_at string `json:"last_reply_at"`
 	Content_is_html bool `json:"content_is_html"`
 	Tab string `json:"tab"`
-	deleted bool `json:"deleted"`
+	Deleted bool `json:"deleted"`
 }
 type TopicModel struct{}
 func (p *TopicModel) GetTopicByQuery(tab string,good bool)(topics []Topic,err error){
@@ -36,6 +37,16 @@ func (p *TopicModel) GetTopicByQuery(tab string,good bool)(topics []Topic,err er
 	}
 	
 	return topics,err 	
+}
+func (p *TopicModel) GetTopicById(id string)(topic Topic,err error){
+	mgodb := db.MogSession.DB("egg_cnode")
+	objectId := bson.ObjectIdHex(id)
+
+
+	err=mgodb.C("topics").Find(bson.M{"_id":objectId}).One(&topic);
+
+	
+	return topic,err 	
 }
 
 

@@ -1,0 +1,35 @@
+{{define "abstract"}}
+{{range $i,$v:=.topics}}
+<div class='cell'>
+
+
+
+  <span class="reply_count pull-left">
+    <span class="count_of_replies" title="回复数">
+      {{$v.Reply_count}}
+    </span>
+    <span class="count_seperator">/</span>
+    <span class="count_of_visits" title='点击数'>
+      {{$v.Visit_count}}
+    </span>
+  </span>
+
+ 
+
+  <div class="topic_title_wrapper">
+
+    <!-- <%- include('./_top_good.html', {topic: topic}) %> -->
+    {{if $v.Top}}
+      <span class='put_top'>置顶</span>
+    {{end}}
+    {{ if $v.Good}} 
+      <span class='put_good'>精华</span>
+    {{end}}
+
+    <a class='topic_title' href='/topic/{{$v.Id.Hex}}' title='{{$v.Title}}'>
+      {{$v.Title}}
+    </a>
+  </div>
+</div>
+{{end}}
+{{end}}

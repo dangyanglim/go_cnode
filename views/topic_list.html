@@ -3,6 +3,9 @@
     <!-- <% for (var i = 0; i < topics.length; i++) { %>
     <%- include('./abstract.html', { topic: topics[i] }) %>
     <% } %> -->
+   
+    {{ template "abstract" .}} 
+  
   </div>
   <div class='pagination' current_page='{{.current_page}}'>
     <ul>

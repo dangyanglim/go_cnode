@@ -30,11 +30,13 @@ func initRouter() *gin.Engine {
 	router.GET("/signin", sign.Signin)
 	router.GET("/setting", sign.Setting)
 	router.GET("/my/messages", sign.Message)
-	router.GET("/topic/create", topic.TopicCreate)
+	
 	router.POST("/passport/local", sign.Login)
 	router.GET("/search_pass", sign.SearchPass)
 	router.GET("/api", site.Api)
 	router.GET("/getstart", site.Getstart)
+	router.GET("/topic/:tid", topic.Index)
+	router.GET("/topics/create", topic.TopicCreate)
 	router.POST("/person", AddPersonApi)
 
 	router.GET("/persons", GetPersonsApi)
