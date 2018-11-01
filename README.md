@@ -6,7 +6,7 @@
 #### 安装
 安装mysql  
 安装mongodb  
-`go run main.go router.go`
+`go run main.go router.go`  
 解决报错的问题  
 
 
