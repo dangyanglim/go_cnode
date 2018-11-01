@@ -55,3 +55,19 @@ func (p *TopicModel) GetTopicById(id string) (topic Topic, author User, err erro
 
 	return topic, author, err
 }
+func (p *TopicModel) NewAndSave(title string, tab string, id string, content string) ( topic Topic,err error) {
+
+	
+	objectId := bson.ObjectIdHex(id)
+	topic = Topic{
+		Id:          bson.NewObjectId(),
+		Title:        title,
+		Content:   content,
+		Tab:        tab,
+		Author_id:objectId,
+	}
+	mgodb := db.MogSession.DB("egg_cnode")
+	err = mgodb.C("topics").Insert(&topic)
+	log.Println(err)
+	return topic,err
+}

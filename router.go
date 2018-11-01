@@ -35,7 +35,8 @@ func initRouter() *gin.Engine {
 	router.GET("/api", site.Api)
 	router.GET("/getstart", site.Getstart)
 	router.GET("/topic/:id", topic.Index)
-	router.GET("/topics/create", topic.TopicCreate)
+	router.GET("/topics/create", topic.ShowCreate)
+	router.POST("/topic/create", topic.Create)
 	router.GET("/active_account", sign.ActiveAccount) // 帐号激活
 	return router
 }

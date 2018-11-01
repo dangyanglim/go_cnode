@@ -14,7 +14,7 @@ import (
 var userModel = new(models.UserModel)
 var topicModel = new(models.TopicModel)
 
-func TopicCreate(c *gin.Context) {
+func ShowCreate(c *gin.Context) {
 	session := sessions.Get(c)
 	var name string
 	user := models.User{}
@@ -59,4 +59,20 @@ func Index(c *gin.Context) {
 			"description": "CNode：Node.js专业中文社区",
 		},
 	})
+}
+func Create(c *gin.Context) {
+	session := sessions.Get(c)
+	var name string	
+	user := models.User{}
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
+	id:=user.Id.Hex()	
+	tab := c.Request.FormValue("tab")
+	title := c.Request.FormValue("title")
+	content := c.Request.FormValue("content")
+	topic,_:=topicModel.NewAndSave(title,tab,id,content)
+	url:="/topic/"+topic.Id.Hex()
+	c.Redirect(301, url)
 }
