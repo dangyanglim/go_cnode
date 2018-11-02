@@ -5,10 +5,13 @@ import (
  _ "github.com/go-sql-driver/mysql"
  "log"
  "gopkg.in/mgo.v2"
+ "github.com/garyburd/redigo/redis"
+ "fmt"
 )
 
 var SqlDB *sql.DB
 var MogSession *mgo.Session
+var Redis redis.Conn
 //var mgodb *mgo.Database
 func init() {
  var err error
@@ -26,6 +29,12 @@ func init() {
      panic(mgoerr)
  }
  MogSession.SetMode(mgo.Monotonic, true)
+ Redis, err = redis.Dial("tcp", "127.0.0.1:6379")
+ if err != nil {
+     fmt.Println("Connect to redis error", err)
+     return
+ }
+
 //  defer mogSession.Close() 
 //  session.SetMode(mgo.Monotonic, true)
 //  mgodb = session.DB("egg_cnode")

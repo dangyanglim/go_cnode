@@ -57,6 +57,14 @@
       <% } else { %>
       <p>无</p>
       <% } %> -->
+      <ul class="unstyled">
+      {{range $i,$v:=.no_reply_topics}}
+      <li>
+        <div><a class='dark topic_title' href="/topic/{{$v.Id.Hex}}" title="{{$v.Title}}">{{$v.Title}}</a>
+        </div>
+      </li>
+      {{end}}
+    </ul>
     </div>
   </div>
   {{end}}

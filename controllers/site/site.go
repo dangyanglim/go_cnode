@@ -11,6 +11,8 @@ import (
   "github.com/tommy351/gin-sessions"
   "github.com/dangyanglim/go_cnode/mgoModels"
   "strconv"
+  "github.com/dangyanglim/go_cnode/service/cache"
+  "encoding/json"
 
 )
 
@@ -250,7 +252,7 @@ var userModel = new(models.UserModel)
 var topicModel = new(models.TopicModel)
 func Index(c *gin.Context) {
   //c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-  var no_reply_topics =[]string{"2","2"};
+  var no_reply_topics []models.Topic;
 
   var tops =[]string{"2","2"};
   tab:=c.Request.FormValue("tab")
@@ -303,6 +305,16 @@ func Index(c *gin.Context) {
   var i int
   for i =1;i<pages+1;i++{
     pagesArray=append(pagesArray,strconv.Itoa(i))
+  }
+  no_reply_topics2,err2:=cache.Get("no_reply_topics")
+  json.Unmarshal(no_reply_topics2.([]byte),&no_reply_topics)
+  log.Println("temp")
+  log.Println(err2)
+  //log.Println(temp)
+  if(err!=nil){
+    no_reply_topics,_=topicModel.GetTopicNoReply()
+    no_reply_topics_json,_:=json.Marshal(no_reply_topics)
+    cache.Set("no_reply_topics",no_reply_topics_json)
   }
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title": "布局页面",

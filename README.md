@@ -6,6 +6,7 @@
 #### 安装
 安装mysql  
 安装mongodb  
+安装redis   
 `go run main.go router.go`  
 解决报错的问题  
 

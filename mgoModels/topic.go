@@ -71,3 +71,11 @@ func (p *TopicModel) NewAndSave(title string, tab string, id string, content str
 	log.Println(err)
 	return topic,err
 }
+func (p *TopicModel) GetTopicNoReply() (topics []Topic, err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+
+	err = mgodb.C("topics").Find(bson.M{"reply_count": 0}).Limit(5).All(&topics)
+	
+
+	return topics, err
+}
