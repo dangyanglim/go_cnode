@@ -6,6 +6,8 @@ import (
 
 	db "github.com/dangyanglim/go_cnode/database"
 	"gopkg.in/mgo.v2/bson"
+	"encoding/json"
+	"time"
 )
 
 //"log"
@@ -21,7 +23,7 @@ type Topic struct {
 	Reply_count     uint          `json:"reply_count"`
 	Visit_count     uint          `json:"visit_count"`
 	Collect_count   uint          `json:"collect_count"`
-	Create_at       string        `json:"create_at"`
+	Create_at       time.Time        `bson:"create_at"`
 	Update_at       string        `json:"update_at"`
 	Last_reply      uint          `json:"last_reply"`
 	Last_reply_at   string        `json:"last_reply_at"`
@@ -42,6 +44,40 @@ func (p *TopicModel) GetTopicByQuery(tab string, good bool) (topics []Topic, err
 	}
 
 	return topics, err
+}
+func (p *TopicModel) GetTopicBy(tab string, good bool) (topics []Topic,topicss []byte, err error) {
+	type TopciAndAuthor struct{
+		Author User `json:"author"`
+		Topic Topic `json:"topic"`
+	}
+	var temps []TopciAndAuthor 
+	mgodb := db.MogSession.DB("egg_cnode")
+	if tab == "" || tab == "all" {
+		err = mgodb.C("topics").Find(bson.M{"good": good}).All(&topics)
+	} else {
+		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).All(&topics)
+	}
+	for _,v:=range topics{
+		var temp TopciAndAuthor
+		temp.Topic=v
+		author, _ := userModel.GetUserById(v.Author_id.Hex())
+		temp.Author=author
+		temps=append(temps,temp)
+	}
+	//log.Println(temps)
+	topicss,_=json.Marshal(temps)
+	//log.Println(string(topicss))
+	return topics,topicss, err
+}
+func (p *TopicModel) GetTopicByQueryCount(tab string, good bool) (count int, err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+	if tab == "" || tab == "all" {
+		count,err = mgodb.C("topics").Find(bson.M{"good": good}).Count()
+	} else {
+		count,err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Count()
+	}
+
+	return count, err
 }
 func (p *TopicModel) GetTopicById(id string) (topic Topic, author User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
@@ -65,6 +101,7 @@ func (p *TopicModel) NewAndSave(title string, tab string, id string, content str
 		Content:   content,
 		Tab:        tab,
 		Author_id:objectId,
+		Create_at:time.Now(),
 	}
 	mgodb := db.MogSession.DB("egg_cnode")
 	err = mgodb.C("topics").Insert(&topic)

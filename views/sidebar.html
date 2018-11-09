@@ -86,6 +86,14 @@
       <% } else { %>
       <p>无</p>
       <% } %> -->
+        <ol>
+          {{range $i,$v:=.tops}}
+          <li>
+            <span class='top_score'>{{$v.Score}}</span>
+            <span class="user_name"><a href="/user/{{$v.Loginname}}">{{$v.Loginname}}</a></span>
+          </li>
+          {{end}}
+        </ol>
     </div>
   </div>
   {{end}}

@@ -17,7 +17,11 @@ func Set(key string,data interface{})(error){
 
 	return err
 }
+func SetEx(key string,data interface{})(error){
+	_,err:=redis.String(db.Redis.Do("SET",key,data,"EX",60))
 
+	return err
+}
 
 
 

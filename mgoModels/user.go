@@ -21,6 +21,7 @@ type User struct {
 	AccessToken string        `json:"accessToken"`
 	Score       uint          `json:"score"`
 	Active      bool          `json:"active"`
+	Is_block bool `json:"is_block"`
 }
 type UserModel struct{}
 
@@ -30,6 +31,11 @@ func (p *UserModel) GetUserById(id string) (user User, err error) {
 	objectId := bson.ObjectIdHex(id)
 	err = mgodb.C("users").Find(bson.M{"_id": objectId}).One(&user)
 	return user, err
+}
+func (p *UserModel) GetUserTops() (users []User, err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+	err = mgodb.C("users").Find(bson.M{}).Limit(10).Sort("-score").All(&users)
+	return users, err
 }
 func (p *UserModel) GetUserByName(name string) (user User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")

@@ -1,33 +1,41 @@
 {{define "abstract"}}
-{{range $i,$v:=.topics}}
+{{range $i,$v:=.topicss}}
 <div class='cell'>
 
-
+  <a class="user_avatar pull-left" href="/user/{{$v.author.loginname}}">
+    <img src="{{$v.author.avatar}}"
+         title="{{$v.author.loginname}}"
+            />
+  </a>
 
   <span class="reply_count pull-left">
     <span class="count_of_replies" title="回复数">
-      {{$v.Reply_count}}
+      {{$v.topic.reply_count}}
     </span>
     <span class="count_seperator">/</span>
     <span class="count_of_visits" title='点击数'>
-      {{$v.Visit_count}}
+      {{$v.topic.visit_count}}
     </span>
   </span>
 
- 
+  <span class='last_time pull-right'>
+    <span class="last_active_time">{{$v.topic.Create_at}}</span>
+  </span> 
 
   <div class="topic_title_wrapper">
 
     <!-- <%- include('./_top_good.html', {topic: topic}) %> -->
-    {{if $v.Top}}
+    {{if $v.topic.top}}
       <span class='put_top'>置顶</span>
     {{end}}
-    {{ if $v.Good}} 
+    {{ if $v.topic.tood}} 
       <span class='put_good'>精华</span>
     {{end}}
-
-    <a class='topic_title' href='/topic/{{$v.Id.Hex}}' title='{{$v.Title}}'>
-      {{$v.Title}}
+    {{ if $v.topic.tab}}
+    <span class="topiclist-tab">{{$v.topic.tab}}</span>
+    {{end}}
+    <a class='topic_title' href='/topic/{{$v.topic.Id}}' title='{{$v.Title}}'>
+      {{$v.topic.title}}
     </a>
   </div>
 </div>
