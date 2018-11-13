@@ -289,25 +289,39 @@ func Index(c *gin.Context) {
   log.Println(err)
   topics:=make([]models.Topic,10)
 
-  log.Println(queryTab)
-  log.Println(good)  
+  //log.Println(queryTab)
+  //log.Println(good)  
   topics,_=topicModel.GetTopicByQuery(queryTab,good)
   _,tempss,_:=topicModel.GetTopicBy(queryTab,good)
   var topicss []map[string]interface{}
   json.Unmarshal([]byte(tempss), &topicss)
-  log.Println(topicss)
-  now := time.Now()
+  
+  //now := time.Now()
   for _,v:=range topicss{
-    log.Println(v["topic"].(map[string]interface{})["Create_at"])
+    //log.Println(v["topic"].(map[string]interface{})["Create_at"])
     
     timeString := v["topic"].(map[string]interface{})["Create_at"].(string)
     t, err3 := time.Parse("2006-01-02T15:04:05-07:00", timeString)
     fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
-    subM := now.Sub(t)
+    //subM := now.Sub(t)
     v["topic"].(map[string]interface{})["Create_at"]=t.Format("2006-01-02 15:04:05")
-    fmt.Println(int(subM.Minutes()), "分钟")  
-    log.Println(err3)   
+    //fmt.Println(int(subM.Minutes()), "分钟") 
+    timeString = v["topic"].(map[string]interface{})["last_reply_at"].(string)
+    t, err3 = time.Parse("2006-01-02T15:04:05-07:00", timeString)
+    fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
+    v["topic"].(map[string]interface{})["last_reply_at"]=t.Format("2006-01-02 15:04:05")    
+     
+    log.Println(err3)
+    log.Println(v["reply"].(map[string]interface{})["Author_id"])
+    if(v["reply"].(map[string]interface{})["Author_id"].(string)!=""){
+      author, _ := userModel.GetUserById(v["reply"].(map[string]interface{})["Author_id"].(string))
+      j,_:=json.Marshal(author)
+      m := make(map[string]interface{})
+      json.Unmarshal(j, &m)
+      v["reply"].(map[string]interface{})["author"]=m 
+    } 
   }
+  log.Println(topicss)
   base_url:="/?tab="+tab+"&page="
   //var current_page int=1
   pagesCacheKey:=queryTab+strconv.FormatBool(good)+"pages"
@@ -315,7 +329,7 @@ func Index(c *gin.Context) {
   var err2 error
   temp,err2:=cache.Get(pagesCacheKey)
   log.Println(err2)
-  log.Println(string(temp.([]byte)))
+  //log.Println(string(temp.([]byte)))
   
   if(err2!=nil){
     pages,_=topicModel.GetTopicByQueryCount(queryTab,good)
@@ -325,7 +339,7 @@ func Index(c *gin.Context) {
     pages,_=strconv.Atoi(string(temp.([]byte)))
   }
 
-  log.Println(pages)
+  //log.Println(pages)
   var page_start int
   var page_end int
   if (current_page-2)>0{
@@ -354,7 +368,7 @@ func Index(c *gin.Context) {
     cache.SetEx("no_reply_topics",no_reply_topics_json)
   }
   tops,_:=userModel.GetUserTops()
-  log.Println(tops)
+  //log.Println(tops)
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title": "布局页面",
     "no_reply_topics":no_reply_topics,

@@ -17,23 +17,36 @@
       {{$v.topic.visit_count}}
     </span>
   </span>
-
+  {{if not $v.topic.reply_count }}
   <span class='last_time pull-right'>
     <span class="last_active_time">{{$v.topic.Create_at}}</span>
-  </span> 
-
+  </span>
+  {{else}}
+  <a class='last_time pull-right' href="/topic/{{$v.topic.Id}}#{{$v.reply.Id}}">
+    <img class="user_small_avatar" src="{{$v.reply.author.avatar}}">
+    <span class="last_active_time">{{$v.topic.last_reply_at}}</span>
+  </a>
+  {{end}}
   <div class="topic_title_wrapper">
 
-    <!-- <%- include('./_top_good.html', {topic: topic}) %> -->
-    {{if $v.topic.top}}
-      <span class='put_top'>置顶</span>
+    {{if and $v.topic.top $v.topic.good}}
+      {{if $v.topic.top}}
+        <span class='put_top'>置顶</span>
+      {{end}}
+      {{ if $v.topic.tood}} 
+        <span class='put_good'>精华</span>
+      {{end}}
+    {{else}}
+      {{ if $v.topic.tab}}
+        {{if eq $v.topic.tab "share"}}
+        <span class="topiclist-tab">分享</span>
+        {{end}}
+        {{if eq $v.topic.tab "ask"}}
+        <span class="topiclist-tab">问答</span>
+        {{end}}    
+      {{end}}
     {{end}}
-    {{ if $v.topic.tood}} 
-      <span class='put_good'>精华</span>
-    {{end}}
-    {{ if $v.topic.tab}}
-    <span class="topiclist-tab">{{$v.topic.tab}}</span>
-    {{end}}
+
     <a class='topic_title' href='/topic/{{$v.topic.Id}}' title='{{$v.Title}}'>
       {{$v.topic.title}}
     </a>

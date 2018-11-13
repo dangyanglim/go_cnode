@@ -3,6 +3,7 @@
 #### 项目介绍
 用golang语言重写http://cnodejs.org/  
 在线http://fenghuangyu.cn:9035   
+账号密码admin  
 #### 安装
 安装mysql  
 安装mongodb  

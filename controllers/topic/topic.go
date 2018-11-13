@@ -1,7 +1,7 @@
 package topic
 
 import (
-	//"log"
+	"log"
 	"net/http"
 	//"regexp"
 
@@ -68,7 +68,9 @@ func Create(c *gin.Context) {
 		name = session.Get("loginname").(string)
 		user, _ = userModel.GetUserByName(name)
 	}
-	id:=user.Id.Hex()	
+	log.Println(user)
+	id:=user.Id.Hex()
+	log.Println(id)	
 	tab := c.Request.FormValue("tab")
 	title := c.Request.FormValue("title")
 	content := c.Request.FormValue("content")

@@ -25,8 +25,8 @@ type Topic struct {
 	Collect_count   uint          `json:"collect_count"`
 	Create_at       time.Time        `bson:"create_at"`
 	Update_at       string        `json:"update_at"`
-	Last_reply      uint          `json:"last_reply"`
-	Last_reply_at   string        `json:"last_reply_at"`
+	Last_reply      bson.ObjectId          `bson:"last_reply,omitempty"`
+	Last_reply_at   time.Time       `json:"last_reply_at,omitempty"`
 	Content_is_html bool          `json:"content_is_html"`
 	Tab             string        `json:"tab"`
 	Deleted         bool          `json:"deleted"`
@@ -34,7 +34,7 @@ type Topic struct {
 type TopicModel struct{}
 
 var userModel = new(UserModel)
-
+var replyModel = new(ReplyModel)
 func (p *TopicModel) GetTopicByQuery(tab string, good bool) (topics []Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
@@ -49,6 +49,7 @@ func (p *TopicModel) GetTopicBy(tab string, good bool) (topics []Topic,topicss [
 	type TopciAndAuthor struct{
 		Author User `json:"author"`
 		Topic Topic `json:"topic"`
+		Reply Reply `json:"reply"`
 	}
 	var temps []TopciAndAuthor 
 	mgodb := db.MogSession.DB("egg_cnode")
@@ -62,6 +63,12 @@ func (p *TopicModel) GetTopicBy(tab string, good bool) (topics []Topic,topicss [
 		temp.Topic=v
 		author, _ := userModel.GetUserById(v.Author_id.Hex())
 		temp.Author=author
+		 if v.Last_reply.Hex()!=""{
+			reply, _ := replyModel.GetReplyById(v.Last_reply.Hex())
+			log.Println("dddd",reply)
+			temp.Reply=reply
+		 }
+
 		temps=append(temps,temp)
 	}
 	//log.Println(temps)
@@ -86,8 +93,8 @@ func (p *TopicModel) GetTopicById(id string) (topic Topic, author User, err erro
 	err = mgodb.C("topics").Find(bson.M{"_id": objectId}).One(&topic)
 
 	author, _ = userModel.GetUserById(topic.Author_id.Hex())
-	log.Println(topic)
-	log.Println(author)
+	//log.Println(topic)
+	//log.Println(author)
 
 	return topic, author, err
 }
@@ -105,6 +112,7 @@ func (p *TopicModel) NewAndSave(title string, tab string, id string, content str
 	}
 	mgodb := db.MogSession.DB("egg_cnode")
 	err = mgodb.C("topics").Insert(&topic)
+	log.Println(topic)
 	log.Println(err)
 	return topic,err
 }
