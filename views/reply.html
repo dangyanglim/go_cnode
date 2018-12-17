@@ -1,0 +1,65 @@
+{{define "reply"}}
+{{range $i,$v:=.topic.RepliyWithAuthors}}
+<div class='cell reply_area reply_item'>
+  <div class='author_content'>
+    <a href="/user/{{$v.Author.Id}}" class="user_avatar">
+
+    <div class='user_info'>
+      <a class='dark reply_author' href="/user/{{$v.Author.Loginname}}">{{$v.Author.Loginname}}</a>
+      <a class="reply_time" href="#{{$v.Reply.Id}}">{{$i}}楼•{{$v.Reply.Create_at}}</a>
+      {{if eq $v.Author.Loginname $.topic.Author.Loginname}}
+        <span class="reply_by_author">作者</span>
+      {{end}}
+    </div>
+    <div class='user_action'>
+      <span>
+
+        <span class="up-count">
+          
+        </span>
+      </span>
+      {{if $.user}}
+      <a href='/reply/{{$v.Reply.Id.Hex}}/edit' class='edit_reply_btn'>
+        <i class="fa fa-pencil-square-o" title='编辑'></i>
+      </a>
+      <a href='javascript:void(0);' class='delete_reply_btn'>
+        <i class="fa fa-trash" title='删除'></i>
+      </a>
+      {{end}}
+      <span>
+        {{if $.user}}
+          <i class="fa fa-reply reply2_btn" title="回复"></i>
+        {{end}}
+      </span>
+    </div>
+  </div>
+  <div class='reply_content'>
+    {{$v.Reply.Content}}
+  </div>
+  <div class='clearfix'>
+    <div class='reply2_area'>
+      {{if $.user}}
+      <form class='reply2_form' action='/{{$.topic.Topic.Id.Hex}}/reply' method='post'>
+        <input type='hidden' name='_csrf' value='<%= csrf %>'/>
+        <input type='hidden' name='reply_id' value='{{$v.Reply.Id}}'/>
+
+        <div class='markdown_editor in_editor'>
+          <div class='markdown_in_editor'>
+            <textarea class='span8 editor reply_editor'
+                      id="reply2_editor_{{$v.Reply.Id}}" name='r_content' rows='4'></textarea>
+
+            <div class='editor_buttons'>
+              <input class='span-primary reply2_submit_btn submit_btn'
+                     type="submit" data-id='{{$v.Reply.Id}}' data-loading-text="回复中.." value="回复">
+            </div>
+          </div>
+
+        </div>
+
+      </form>
+      {{end}}
+    </div>
+  </div>
+</div>
+{{end}}
+{{end}}

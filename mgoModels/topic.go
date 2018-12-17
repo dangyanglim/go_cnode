@@ -86,17 +86,27 @@ func (p *TopicModel) GetTopicByQueryCount(tab string, good bool) (count int, err
 
 	return count, err
 }
-func (p *TopicModel) GetTopicById(id string) (topic Topic, author User, err error) {
+// type ReplyAndAuthor struct {
+// 	Author models.User
+// 	Reply  models.Reply
+// }
+func (p *TopicModel) GetTopicById(id string) (topic Topic, author User,replies []Reply ,repliyWithAuthors []ReplyAndAuthor,err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(id)
 
 	err = mgodb.C("topics").Find(bson.M{"_id": objectId}).One(&topic)
 
 	author, _ = userModel.GetUserById(topic.Author_id.Hex())
+	replies,repliyWithAuthors,_=replyModel.GetRepliesByTopicId(topic.Id.Hex())
+	for _,v:=range replies{
+		log.Println(v)
+		author2, _ := userModel.GetUserById(v.Author_id.Hex())
+		log.Println(author2)
+	}
 	//log.Println(topic)
 	//log.Println(author)
 
-	return topic, author, err
+	return topic, author,replies, repliyWithAuthors,err
 }
 func (p *TopicModel) NewAndSave(title string, tab string, id string, content string) ( topic Topic,err error) {
 
@@ -120,6 +130,15 @@ func (p *TopicModel) GetTopicNoReply() (topics []Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 
 	err = mgodb.C("topics").Find(bson.M{"reply_count": 0}).Limit(5).All(&topics)
+	
+
+	return topics, err
+}
+func (p *TopicModel) GetAuthorOtherTopics(author_id string,topic_id string) (topics []Topic, err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+	objectId := bson.ObjectIdHex(author_id)
+	topic_objectId := bson.ObjectIdHex(topic_id)
+	err = mgodb.C("topics").Find(bson.M{"author_id": objectId,"_id": bson.M{"$nin": []bson.ObjectId{topic_objectId}}}).Limit(5).Sort("-last_reply_at").All(&topics)
 	
 
 	return topics, err

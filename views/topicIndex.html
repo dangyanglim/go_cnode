@@ -41,7 +41,12 @@
           <div class='inner'>
             {{if .author_other_topics}}
             <ul class='unstyled'>
-              
+              {{range $i,$v:=.author_other_topics}}
+              <li>
+                <div><a class='dark topic_title' href="/topic/{{$v.Id.Hex}}" title="{{$v.Title}}">{{$v.Title}}</a>
+                </div>
+              </li>
+              {{end}}              
             </ul>
             {{else}}
             <p>无</p>
@@ -56,7 +61,12 @@
           <div class='inner'>
             {{if .no_reply_topics}}
             <ul class='unstyled'>
-              
+              {{range $i,$v:=.no_reply_topics}}
+              <li>
+                <div><a class='dark topic_title' href="/topic/{{$v.Id.Hex}}" title="{{$v.Title}}">{{$v.Title}}</a>
+                </div>
+              </li>
+              {{end}}              
             </ul>
             {{else}}
             <p>无</p>
@@ -106,7 +116,7 @@
                   </a>
         
         
-                  <a href='/topic/<%= topic._id %>/good' data-method="post">
+                  <a href='/topic/{{.topic._id}}/good' data-method="post">
                     {{if .topic.Topic.Good}}
                       <i class="fa fa-lg fa-heart-o" title="取消精华"></i>
                     {{else}}
@@ -129,12 +139,12 @@
                      data-id="{{.topic._id}}"
                      class='delete_topic_btn'>
                      <i class="fa fa-lg fa-trash" title='删除'></i></a>
-                  {{else}}
-                  {{if .user}}
-                  <a href='/topic/<%= topic._id %>/edit'>
+                {{else}}
+                  {{if eq .user.Id.Hex .topic.Topic.Author_id.Hex}}
+                  <a href='/topic/{{.topic.Topic.Id.Hex}}/edit'>
                     <i class="fa fa-lg fa-pencil-square-o" title='编辑'></i></a>
                   <a href='javascript:;'
-                     data-id="<%= topic._id %>"
+                     data-id="{{.topic.Topic.Id.Hex}}"
                      class='delete_topic_btn'>
                      <i class="fa fa-lg fa-trash" title='删除'></i></a>
                   {{end}}
@@ -151,12 +161,54 @@
             </div>
           </div>
 
+          {{if .topic.Replies}}
+            <div class='panel'>
+              <div class='header'>
+                <span class='col_fade'>{{.NoOfRepliy}} 回复</span>
+              </div>
+              {{ template "reply" .}}
+              <!-- <% topic.replies.map((reply, index) => { %>
+                <%- include('../reply/reply.html', { reply, index }) %>
+              <%}) %> -->
+            </div>
+          {{end}}
 
+          {{if .user}}
+            <div class='panel'>
+              <div class='header'>
+                <span class='col_fade'>添加回复</span>
+              </div>
+              <div class='inner reply'>
+                <form id='reply_form' action='/{{.topic.Topic.Id.Hex}}/reply' method='post'>
+          
+                  <div class='markdown_editor in_editor'>
+                    <div class='markdown_in_editor'>
+                      <textarea class='editor' name='r_content' rows='8'></textarea>
+          
+                      <div class='editor_buttons'>
+                        <input class='span-primary submit_btn' type="submit" data-loading-text="回复中.." value="回复" >
+                      </div>
+                    </div>
+          
+                  </div>
+          
+                  <input type='hidden' name='_csrf' id="_csrf" value='<%= csrf %>'/>
+                </form>
+              </div>
+            </div>
+          {{end}}         
     </div>
-      
-
-      
-
+    <div class="replies_history" style="display: none;">
+      <div class="inner_content"></div>
+      <div class="anchor"></div>
+    </div>
+    
+    <!-- 预览模态对话框 -->
+    <div class="modal fade" id="preview-modal">
+      <div class="modal-body" style="max-height: initial;">
+        <img src="" alt="点击内容或者外部自动关闭图片预览" id="preview-image">
+      </div>
+    </div>         
 </div>
 {{ template "footer" .}}
 {{ end }}
