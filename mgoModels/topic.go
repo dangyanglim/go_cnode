@@ -143,3 +143,10 @@ func (p *TopicModel) GetAuthorOtherTopics(author_id string,topic_id string) (top
 
 	return topics, err
 }
+func (p *TopicModel) UpdateReplyCount(id string) (err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+	objectId := bson.ObjectIdHex(id)
+	err = mgodb.C("topics").Update(bson.M{"_id": objectId}, bson.M{"$inc": bson.M{"reply_count": 1}})
+	log.Println(err)
+	return err
+}

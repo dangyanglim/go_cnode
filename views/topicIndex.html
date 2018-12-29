@@ -179,8 +179,8 @@
                 <span class='col_fade'>添加回复</span>
               </div>
               <div class='inner reply'>
-                <form id='reply_form' action='/{{.topic.Topic.Id.Hex}}/reply' method='post'>
-          
+                <form id='reply_form' action='/reply/{{.topic.Topic.Id.Hex}}' method='post'>
+                  <input type='hidden' name='user_id'  value='{{.user.Id.Hex}}'/>
                   <div class='markdown_editor in_editor'>
                     <div class='markdown_in_editor'>
                       <textarea class='editor' name='r_content' rows='8'></textarea>

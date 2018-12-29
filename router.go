@@ -6,6 +6,7 @@ import (
 	"github.com/dangyanglim/go_cnode/controllers/sign"
 	"github.com/dangyanglim/go_cnode/controllers/site"
 	"github.com/dangyanglim/go_cnode/controllers/topic"
+	"github.com/dangyanglim/go_cnode/controllers/reply"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
@@ -36,5 +37,6 @@ func initRouter() *gin.Engine {
 	router.GET("/topics/create", topic.ShowCreate)
 	router.POST("/topic/create", topic.Create)
 	router.GET("/active_account", sign.ActiveAccount) // 帐号激活
+	router.POST("/reply/:topic_id",reply.Add)
 	return router
 }
