@@ -106,8 +106,9 @@ func Add(c *gin.Context) {
 	user_id := c.Request.FormValue("user_id")
 	log.Println(topic_id)
 	log.Println(r_content)
-	topicModel.UpdateReplyCount(topic_id)
-	replyModel.NewAndSave(r_content,topic_id,user_id,"")
+	reply,_:=replyModel.NewAndSave(r_content,topic_id,user_id,"")
+	topicModel.UpdateReplyCount(topic_id,reply.Id)
+	
 	url:="/topic/"+topic_id
 	c.Redirect(301, url)	
 }

@@ -318,10 +318,11 @@ func Index(c *gin.Context) {
       j,_:=json.Marshal(author)
       m := make(map[string]interface{})
       json.Unmarshal(j, &m)
-      v["reply"].(map[string]interface{})["author"]=m 
-    } 
+      v["reply"].(map[string]interface{})["author"]=m
+    }
+    log.Println(v["reply"]);
   }
-  log.Println(topicss)
+  //log.Println(topicss)
   base_url:="/?tab="+tab+"&page="
   //var current_page int=1
   pagesCacheKey:=queryTab+strconv.FormatBool(good)+"pages"

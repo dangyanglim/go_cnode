@@ -143,10 +143,27 @@ func (p *TopicModel) GetAuthorOtherTopics(author_id string,topic_id string) (top
 
 	return topics, err
 }
-func (p *TopicModel) UpdateReplyCount(id string) (err error) {
+func (p *TopicModel) UpdateReplyCount(id string,replyId bson.ObjectId) (err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(id)
-	err = mgodb.C("topics").Update(bson.M{"_id": objectId}, bson.M{"$inc": bson.M{"reply_count": 1}})
+	//objectReplyId := bson.ObjectIdHex(replyId)
+	err = mgodb.C("topics").Update(bson.M{"_id": objectId}, 
+	bson.M{
+		"$inc": bson.M{"reply_count": 1},
+		"$set":bson.M{"last_reply_at":time.Now(),"last_reply":replyId},
+	})
+	log.Println(err)
+	return err
+}
+func (p *TopicModel) UpdateVisitCount(id string) (err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+	objectId := bson.ObjectIdHex(id)
+
+	err = mgodb.C("topics").Update(bson.M{"_id": objectId}, 
+	bson.M{
+		"$inc": bson.M{"visit_count": 1},
+
+	})
 	log.Println(err)
 	return err
 }

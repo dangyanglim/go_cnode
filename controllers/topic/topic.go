@@ -69,6 +69,7 @@ func Index(c *gin.Context) {
 	  no_reply_topics_json,_:=json.Marshal(no_reply_topics)
 	  cache.SetEx("no_reply_topics",no_reply_topics_json)
 	}
+	topicModel.UpdateVisitCount(id);
 	other_topics,_:=topicModel.GetAuthorOtherTopics(author.Id.Hex(),id)
 	c.HTML(http.StatusOK, "topicIndex", gin.H{
 		"title": "布局页面",
