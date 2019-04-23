@@ -9,8 +9,7 @@ func main() {
 	defer db.SqlDB.Close()
 	defer db.MogSession.Close()
 	defer db.Redis.Close()
- 
-	
+
 	router := initRouter()
 
 	// config := cors.DefaultConfig()

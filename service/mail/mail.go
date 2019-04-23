@@ -15,8 +15,6 @@ import (
 
 	"log"
 	"net"
-
-	
 )
 
 var userModel = new(models.UserModel)
@@ -79,13 +77,6 @@ func SendMailViaTLS(addr string, auth smtp.Auth, from string,
 	return c.Quit()
 }
 
-
-
-
-
-
-
-
 func SendActiveMail(who string, token string, name string) {
 	auth := smtp.PlainAuth("", "dangyanglim@qq.com", "uicmeimalcnybgdj", "smtp.qq.com")
 	to := []string{who}
@@ -107,7 +98,7 @@ func SendActiveMail(who string, token string, name string) {
 		user,
 		to,
 		msg,
-	)	
+	)
 	if err != nil {
 		fmt.Printf("send mail error: %v", err)
 	}

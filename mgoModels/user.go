@@ -12,19 +12,19 @@ import (
 //"log"
 
 type User struct {
-	Id          bson.ObjectId `bson:"_id"`
-	Name        string        `json:"name"`
-	Loginname   string        `json:"loginname"`
-	Pass        string        `json:"pass,omitempty"`
-	Email       string        `json:"email"`
-	Avatar      string        `json:"avatar" `
-	AccessToken string        `json:"accessToken"`
-	Score       uint          `json:"score"`
-	Active      bool          `json:"active"`
-	Is_block bool `json:"is_block"`
-	GithubUsername string	`json:"githubUsername,omitempty"`
-	GithubAccessToken string `json:"githubAccessToken,omitempty"`
-	GithubId int `json:"githubId,omitempty"`
+	Id                bson.ObjectId `bson:"_id"`
+	Name              string        `json:"name"`
+	Loginname         string        `json:"loginname"`
+	Pass              string        `json:"pass,omitempty"`
+	Email             string        `json:"email"`
+	Avatar            string        `json:"avatar" `
+	AccessToken       string        `json:"accessToken"`
+	Score             uint          `json:"score"`
+	Active            bool          `json:"active"`
+	Is_block          bool          `json:"is_block"`
+	GithubUsername    string        `json:"githubUsername,omitempty"`
+	GithubAccessToken string        `json:"githubAccessToken,omitempty"`
+	GithubId          int           `json:"githubId,omitempty"`
 }
 type UserModel struct{}
 
@@ -79,7 +79,7 @@ func (p *UserModel) NewAndSave(name string, loginname string, email string, pass
 	log.Println(err)
 	return err
 }
-func (p *UserModel) GithubNewAndSave(name string, loginname string, email string,avatar_url string, active bool,githubId int) (temp User,err error) {
+func (p *UserModel) GithubNewAndSave(name string, loginname string, email string, avatar_url string, active bool, githubId int) (temp User, err error) {
 
 	mgodb := db.MogSession.DB("egg_cnode")
 	u2, _ := uuid.NewV4()
@@ -91,9 +91,9 @@ func (p *UserModel) GithubNewAndSave(name string, loginname string, email string
 		Email:       email,
 		Active:      active,
 		AccessToken: u2.String(),
-		GithubId: githubId,
+		GithubId:    githubId,
 	}
 	err = mgodb.C("users").Insert(&user)
 	log.Println(err)
-	return user,err
+	return user, err
 }

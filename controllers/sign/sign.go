@@ -1,17 +1,17 @@
 package sign
 
 import (
-	"log"
-	"net/http"
-	"regexp"
-	"time"
+	"encoding/json"
 	"github.com/dangyanglim/go_cnode/mgoModels"
 	"github.com/dangyanglim/go_cnode/service/mail"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
 	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
-	"encoding/json"
+	"log"
+	"net/http"
+	"regexp"
+	"time"
 )
 
 var userModel = new(models.UserModel)
@@ -198,39 +198,39 @@ func Signup(c *gin.Context) {
 	})
 
 }
- 
+
 func GithubSignup(c *gin.Context) {
-	client_id:="bafc506847f325223094"
-	client_secret:="172d5424cc25be8c8ac8095b40d79fea859588ea"
-	AuthURL:=  "https://github.com/login/oauth/authorize?"
-	
+	client_id := "bafc506847f325223094"
+	client_secret := "172d5424cc25be8c8ac8095b40d79fea859588ea"
+	AuthURL := "https://github.com/login/oauth/authorize?"
 
-
-	url:=AuthURL+"client_id="+client_id+"&client_secret="+client_secret
+	url := AuthURL + "client_id=" + client_id + "&client_secret=" + client_secret
 	log.Println(url)
 	c.Redirect(http.StatusMovedPermanently, url)
-	
+
 }
+
 type GithubUser struct {
-	Login string `json:"login"`
-	Id int `json:"id"`
+	Login      string `json:"login"`
+	Id         int    `json:"id"`
 	Avatar_url string `json:"avatar_url"`
-	Email string `json:"email"`
+	Email      string `json:"email"`
 }
-type  Token struct {
+type Token struct {
 	Access_token string `json:"access_token"`
 }
+
 func GithubCallBack(c *gin.Context) {
-	TokenURL:= "https://github.com/login/oauth/access_token?"
-	UserURL:="https://api.github.com/user?"
-	client_id:="bafc506847f325223094"
-	client_secret:="172d5424cc25be8c8ac8095b40d79fea859588ea"
+	TokenURL := "https://github.com/login/oauth/access_token?"
+	UserURL := "https://api.github.com/user?"
+	client_id := "bafc506847f325223094"
+	client_secret := "172d5424cc25be8c8ac8095b40d79fea859588ea"
 	code := c.Request.FormValue("code")
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
 	}
-	url:=TokenURL+"client_id="+client_id+"&client_secret="+client_secret+"&code="+code
-	req, _:= http.NewRequest("GET",url,nil)
+	url := TokenURL + "client_id=" + client_id + "&client_secret=" + client_secret + "&code=" + code
+	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("Accept", "application/json")
 	res, err := httpClient.Do(req)
 	if err != nil {
@@ -238,17 +238,17 @@ func GithubCallBack(c *gin.Context) {
 		return
 	}
 	defer res.Body.Close()
-    body, err := ioutil.ReadAll(res.Body)
-    if err != nil {
-        // handle error
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		// handle error
 	}
 	var token Token
 	json.Unmarshal(body, &token)
 	log.Println(string(body))
 	log.Println(token)
 
-	url=UserURL+"access_token="+token.Access_token
-	req, _= http.NewRequest("GET",url,nil)
+	url = UserURL + "access_token=" + token.Access_token
+	req, _ = http.NewRequest("GET", url, nil)
 	req.Header.Set("Accept", "application/json")
 	res, err = httpClient.Do(req)
 	if err != nil {
@@ -256,36 +256,36 @@ func GithubCallBack(c *gin.Context) {
 		return
 	}
 	defer res.Body.Close()
-    body, err = ioutil.ReadAll(res.Body)
-    if err != nil {
-        // handle error
+	body, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		// handle error
 	}
 	var githubUser GithubUser
 	json.Unmarshal(body, &githubUser)
-	log.Println(string(body))		
+	log.Println(string(body))
 	log.Println(githubUser)
 	user, er := userModel.GetUserByGithubId(githubUser.Id)
 	//user, er := userModel.GetUserByName("admin")
 	log.Println(er)
 	log.Println(user)
-	if(er==nil){
+	if er == nil {
 		session := sessions.Get(c)
 		session.Set("loginname", user.Loginname)
 		session.Set("accessToken", user.AccessToken)
 		session.Save()
 		c.Redirect(301, "/")
-		//return		
-	}else {
-		user2,er2:=userModel.GithubNewAndSave(githubUser.Login,githubUser.Login,githubUser.Email,githubUser.Avatar_url,true,githubUser.Id)
+		//return
+	} else {
+		user2, er2 := userModel.GithubNewAndSave(githubUser.Login, githubUser.Login, githubUser.Email, githubUser.Avatar_url, true, githubUser.Id)
 		session := sessions.Get(c)
 		session.Set("loginname", user2.Loginname)
 		session.Set("accessToken", user2.AccessToken)
 		session.Save()
 		log.Println(user2)
 		log.Println(er2)
-		c.Redirect(301, "/")		
+		c.Redirect(301, "/")
 	}
-	//c.JSON(200, githubUser)	
+	//c.JSON(200, githubUser)
 }
 func ActiveAccount(c *gin.Context) {
 	loginname := c.Request.FormValue("name")
