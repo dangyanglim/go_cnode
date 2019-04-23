@@ -1,7 +1,7 @@
 {{ define "setting" }}
-{{ template "header" .}}
+{{ template "common/header" .}}
 <div id='main'>
-    {{ template "sidebar" .}}
+    {{ template "common/sidebar" .}}
     <div id='content'>
         <div class='panel'>
           <div class='header'>
@@ -152,7 +152,7 @@
         // END qrcode generate
       </script>
 </div>
-{{ template "footer" .}}
+{{ template "common/footer" .}}
 {{ end }}
 
 

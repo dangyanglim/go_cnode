@@ -1,4 +1,4 @@
-{{ define "sidebar" }}
+{{ define "common/sidebar" }}
 <div id='sidebar'>
 
   <div class='panel'>
@@ -7,7 +7,7 @@
       <span class='col_fade'>个人信息</span>
     </div>
     <div class='inner'>
-        {{ template "card" .}}
+        {{ template "common/card" .}}
     </div>
     {{else}}
     <div class='inner'>

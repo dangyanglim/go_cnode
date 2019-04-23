@@ -18,7 +18,7 @@ func initRouter() *gin.Engine {
 	router.Use(cors.Default())
 	store := sessions.NewCookieStore([]byte("secret123"))
 	router.Use(sessions.Middleware("my_session", store))
-	router.LoadHTMLGlob("views/*")
+	router.LoadHTMLGlob("views/**/*")
 	router.StaticFS("/public", http.Dir("./public"))
 	router.StaticFile("/favicon.ico", "./public/images/cnode_icon_32.png")
 	router.GET("/", site.Index)
