@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/dangyanglim/go_cnode/controllers/sign"
 	"github.com/dangyanglim/go_cnode/controllers/site"
 	"github.com/dangyanglim/go_cnode/controllers/topic"
@@ -10,6 +9,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
+	// _ "net/http/pprof"
+	// "log"
 )
 
 func initRouter() *gin.Engine {
@@ -26,6 +27,8 @@ func initRouter() *gin.Engine {
 	router.POST("/signup", sign.Signup)
 	router.POST("/signout", sign.Signout)
 	router.GET("/signin", sign.Signin)
+	router.GET("/passport/github", sign.GithubSignup)
+	router.GET("/github/callback", sign.GithubCallBack)
 	router.GET("/setting", sign.Setting)
 	router.GET("/my/messages", sign.Message)
 
@@ -38,5 +41,9 @@ func initRouter() *gin.Engine {
 	router.POST("/topic/create", topic.Create)
 	router.GET("/active_account", sign.ActiveAccount) // 帐号激活
 	router.POST("/reply/:topic_id",reply.Add)
+	// go func() {
+    //     log.Println(http.ListenAndServe("localhost:10000", nil)) 
+	// }()
+	
 	return router
 }

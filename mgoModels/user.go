@@ -14,17 +14,26 @@ import (
 type User struct {
 	Id          bson.ObjectId `bson:"_id"`
 	Name        string        `json:"name"`
-	Loginname   string        `json:"loginname" `
-	Pass        string        `json:"pass" `
-	Email       string        `json:"email" `
+	Loginname   string        `json:"loginname"`
+	Pass        string        `json:"pass,omitempty"`
+	Email       string        `json:"email"`
 	Avatar      string        `json:"avatar" `
 	AccessToken string        `json:"accessToken"`
 	Score       uint          `json:"score"`
 	Active      bool          `json:"active"`
 	Is_block bool `json:"is_block"`
+	GithubUsername string	`json:"githubUsername,omitempty"`
+	GithubAccessToken string `json:"githubAccessToken,omitempty"`
+	GithubId int `json:"githubId,omitempty"`
 }
 type UserModel struct{}
 
+func (p *UserModel) GetUserByGithubId(id int) (user User, err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+	log.Println(id)
+	err = mgodb.C("users").Find(bson.M{"GithubId": id}).One(&user)
+	return user, err
+}
 func (p *UserModel) GetUserById(id string) (user User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	log.Println(id)
@@ -69,4 +78,22 @@ func (p *UserModel) NewAndSave(name string, loginname string, email string, pass
 	err = mgodb.C("users").Insert(&user)
 	log.Println(err)
 	return err
+}
+func (p *UserModel) GithubNewAndSave(name string, loginname string, email string,avatar_url string, active bool,githubId int) (temp User,err error) {
+
+	mgodb := db.MogSession.DB("egg_cnode")
+	u2, _ := uuid.NewV4()
+	user := User{
+		Id:          bson.NewObjectId(),
+		Name:        name,
+		Loginname:   loginname,
+		Avatar:      avatar_url,
+		Email:       email,
+		Active:      active,
+		AccessToken: u2.String(),
+		GithubId: githubId,
+	}
+	err = mgodb.C("users").Insert(&user)
+	log.Println(err)
+	return user,err
 }

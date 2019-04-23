@@ -14,11 +14,11 @@ import (
 type Reply struct {
 	Id              bson.ObjectId `bson:"_id"`
 	Topic_id           bson.ObjectId        `bson:"topic_id"`
-	Reply_id        bson.ObjectId        `bson:"reply_id,omitempty" `
+	Reply_id        bson.ObjectId        `bson:"reply_id,omitempty"`
 	Author_id       bson.ObjectId `bson:"author_id" `
 	Create_at       time.Time        `bson:"create_at"`
 	Update_at       time.Time       `bson:"update_at"`
-	Content		string `json:"content`
+	Content		string `json:"content"`
 	Content_is_html bool          `json:"content_is_html"`
 
 	Deleted         bool          `json:"deleted"`
@@ -72,6 +72,7 @@ func (p *ReplyModel) NewAndSave(content string, topic_id string, user_id string,
 	err = mgodb.C("replies").Insert(&reply)
 	log.Println(reply)
 	log.Println(err)
+	
 	return reply,err
 }
 
