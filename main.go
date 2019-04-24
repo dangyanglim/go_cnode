@@ -1,7 +1,7 @@
 package main
 
 import (
-	db "github.com/dangyanglim/go_cnode/database"
+	db "go_cnode/database"
 	//"log"
 )
 

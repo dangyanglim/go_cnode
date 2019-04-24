@@ -2,8 +2,8 @@ package sign
 
 import (
 	"encoding/json"
-	"github.com/dangyanglim/go_cnode/mgoModels"
-	"github.com/dangyanglim/go_cnode/service/mail"
+	"go_cnode/mgoModels"
+	"go_cnode/service/mail"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
 	"golang.org/x/crypto/bcrypt"

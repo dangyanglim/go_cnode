@@ -8,7 +8,7 @@ import (
 	//"regexp"
 	"strings"
 
-	"github.com/dangyanglim/go_cnode/mgoModels"
+	"go_cnode/mgoModels"
 	//"github.com/gin-gonic/gin"
 	//"github.com/tommy351/gin-sessions"
 	"crypto/tls"

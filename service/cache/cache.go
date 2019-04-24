@@ -2,7 +2,7 @@ package cache
 
 import (
 	//"log"
-	db "github.com/dangyanglim/go_cnode/database"
+	db "go_cnode/database"
 	"github.com/garyburd/redigo/redis"
 )
 

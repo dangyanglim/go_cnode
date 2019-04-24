@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/dangyanglim/go_cnode/controllers/reply"
-	"github.com/dangyanglim/go_cnode/controllers/sign"
-	"github.com/dangyanglim/go_cnode/controllers/site"
-	"github.com/dangyanglim/go_cnode/controllers/topic"
+	"go_cnode/controllers/reply"
+	"go_cnode/controllers/sign"
+	"go_cnode/controllers/site"
+	"go_cnode/controllers/topic"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"

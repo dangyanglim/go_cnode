@@ -2,8 +2,7 @@ package models
 
 import (
 	"log"
-
-	db "github.com/dangyanglim/go_cnode/database"
+	db "go_cnode/database"
 	"github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
@@ -64,7 +63,7 @@ func (p *UserModel) GetUserByNameOrEmail(name string, email string) (user User, 
 func (p *UserModel) NewAndSave(name string, loginname string, email string, pass string, avatar_url string, active bool) (err error) {
 	hashPass, _ := bcrypt.GenerateFromPassword([]byte(pass), 10)
 	mgodb := db.MogSession.DB("egg_cnode")
-	u2, _ := uuid.NewV4()
+	u2:= uuid.NewV4()
 	user := User{
 		Id:          bson.NewObjectId(),
 		Name:        name,
@@ -82,7 +81,7 @@ func (p *UserModel) NewAndSave(name string, loginname string, email string, pass
 func (p *UserModel) GithubNewAndSave(name string, loginname string, email string, avatar_url string, active bool, githubId int) (temp User, err error) {
 
 	mgodb := db.MogSession.DB("egg_cnode")
-	u2, _ := uuid.NewV4()
+	u2:= uuid.NewV4()
 	user := User{
 		Id:          bson.NewObjectId(),
 		Name:        name,

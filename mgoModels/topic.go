@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"encoding/json"
-	db "github.com/dangyanglim/go_cnode/database"
+	db "go_cnode/database"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
