@@ -4,13 +4,17 @@ import (
 	"log"
 	"net/http"
 	//"regexp"
-
-	"github.com/dangyanglim/go_cnode/mgoModels"
+	//"fmt"
+	//"os"
+	//"io"
+	"go_cnode/mgoModels"
 	//"github.com/dangyanglim/go_cnode/service/mail"
 	"encoding/json"
-	"github.com/dangyanglim/go_cnode/service/cache"
+	"go_cnode/service/cache"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
+	"github.com/russross/blackfriday"
+	"html/template"/*  */
 )
 
 var userModel = new(models.UserModel)
@@ -42,6 +46,7 @@ func Index(c *gin.Context) {
 	var no_reply_topics []models.Topic
 	type Temp struct {
 		Topic             models.Topic
+		LinkContent 		template.HTML
 		Author            models.User
 		Replies           []models.Reply
 		RepliyWithAuthors []models.ReplyAndAuthor
@@ -55,20 +60,20 @@ func Index(c *gin.Context) {
 	id := c.Param("id")
 	topic, author, replies, repliyWithAuthors, _ := topicModel.GetTopicById(id)
 	temp.Author = author
+	temp.LinkContent= template.HTML(blackfriday.Run([]byte(topic.Content)))
 	temp.Topic = topic
 	temp.Replies = replies
 	NoOfRepliy := len(replies)
 	temp.RepliyWithAuthors = repliyWithAuthors
 	no_reply_topics2, err2 := cache.Get("no_reply_topics")
 	json.Unmarshal(no_reply_topics2.([]byte), &no_reply_topics)
-	log.Println("temp")
-	log.Println(err2)
-	//log.Println(temp)
+	
 	if err2 != nil {
 		no_reply_topics, _ = topicModel.GetTopicNoReply()
 		no_reply_topics_json, _ := json.Marshal(no_reply_topics)
 		cache.SetEx("no_reply_topics", no_reply_topics_json)
 	}
+	log.Println(temp)
 	topicModel.UpdateVisitCount(id)
 	other_topics, _ := topicModel.GetAuthorOtherTopics(author.Id.Hex(), id)
 	c.HTML(http.StatusOK, "topicIndex", gin.H{
@@ -100,4 +105,47 @@ func Create(c *gin.Context) {
 	topic, _ := topicModel.NewAndSave(title, tab, id, content)
 	url := "/topic/" + topic.Id.Hex()
 	c.Redirect(301, url)
+}
+const (
+	upload_path string = "./public/upload/"
+	upload_path2 string = "/public/upload/"
+)
+func Upload(c *gin.Context) {
+	session := sessions.Get(c)
+	var name string
+	user := models.User{}
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
+	log.Println(user)
+	id := user.Id.Hex()
+	log.Println(id)
+	picName := c.Request.FormValue("name")
+	file, _ := c.FormFile("file")
+	log.Println(file.Filename)
+	log.Println(picName)
+
+	//创建文件
+	// fW, err := os.Create(upload_path + file.Filename)
+	// if err != nil {
+	// 	fmt.Println("文件创建失败")
+	// 	return
+	// }
+	// defer fW.Close()
+	// _, err = io.Copy(fW, file)
+	// if err != nil {
+	// 	fmt.Println("文件保存失败")
+	// 	return
+	// }
+	c.SaveUploadedFile(file,upload_path + file.Filename)
+	var msg struct {
+		Success    bool `json:"success"`
+		Url string `json:"url"`
+	}
+	msg.Success = true
+	msg.Url=upload_path2 + file.Filename	
+	c.JSON(http.StatusOK, msg)
+
+
 }

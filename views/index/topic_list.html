@@ -25,10 +25,10 @@
   
 
         {{range $i,$v:=.pagesArray}}
-            {{if eq $i $.current_page}}
+            {{if eq $v $.current_page}}
             <li class='disabled'><a>{{$v}}</a></li>
             {{else}}
-            <li><a href='{{$.base_url}}+{{$v}}'>{{$v}}</a></li>
+            <li><a href='{{$.base_url}}{{$v}}'>{{$v}}</a></li>
             {{end}}
         {{end}}
       {{ if lt .page_end  .pages}}
@@ -38,7 +38,7 @@
       {{if eq .current_page .pages}}
       <li class='disabled'><a>»</a></li>
       {{else}}
-      <li><a href='{{.base_url}}+{{.pages}}'>»</a></li>
+      <li><a href='{{.base_url}}{{.pages}}'>»</a></li>
       {{end}}
     </ul>
   </div>

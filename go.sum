@@ -1,5 +1,3 @@
-github.com/dangyanglim/go_cnode v0.0.0-20190423091924-faa24c4a77fb h1:3yibf3k2wJhi3aR7GpC3xAG5TV1q7qhh9IlguR7q2oo=
-github.com/dangyanglim/go_cnode v0.0.0-20190423091924-faa24c4a77fb/go.mod h1:zzmBwWM6XiMJ4eGYW4n6q6NlwuvKDX++2zKfwfAf4Zo=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/garyburd/redigo v1.6.0 h1:0VruCpn7yAIIu7pWVClQC8wxCJEcG3nyzpMSHKi1PQc=

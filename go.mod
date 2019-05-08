@@ -13,7 +13,6 @@ replace golang.org/x/crypto => github.com/golang/crypto v0.0.0-20190422183909-d8
 replace golang.org/x/text => github.com/golang/text v0.3.0
 
 require (
-	github.com/dangyanglim/go_cnode v0.0.0-20190423091924-faa24c4a77fb
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-contrib/cors v0.0.0-20190424000812-bd1331c62cae
 	github.com/gin-gonic/gin v1.3.0

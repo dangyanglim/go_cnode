@@ -262,7 +262,7 @@ func Index(c *gin.Context) {
   if(page==""){
     page="1"
   }  
-  current_page, err := strconv.Atoi(page)
+  current_page, _ := strconv.Atoi(page)
 
   var queryTab string
   if tab==""{
@@ -284,15 +284,15 @@ func Index(c *gin.Context) {
   log.Println(user)
   if nil!=session.Get("loginname"){
     name=session.Get("loginname").(string)
-    user,err=userModel.GetUserByName(name)
+    user,_=userModel.GetUserByName(name)
   }
-  log.Println(err)
+  //log.Println(err)
   topics:=make([]models.Topic,10)
 
   //log.Println(queryTab)
   //log.Println(good)  
-  topics,_=topicModel.GetTopicByQuery(queryTab,good)
-  _,tempss,_:=topicModel.GetTopicBy(queryTab,good)
+  topics,_=topicModel.GetTopicByQuery(queryTab,good,(current_page-1)*10)
+  _,tempss,_:=topicModel.GetTopicBy(queryTab,good,(current_page-1)*10)
   var topicss []map[string]interface{}
   json.Unmarshal([]byte(tempss), &topicss)
   
@@ -301,18 +301,18 @@ func Index(c *gin.Context) {
     //log.Println(v["topic"].(map[string]interface{})["Create_at"])
     
     timeString := v["topic"].(map[string]interface{})["Create_at"].(string)
-    t, err3 := time.Parse("2006-01-02T15:04:05-07:00", timeString)
-    fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
+    t, _ := time.Parse("2006-01-02T15:04:05-07:00", timeString)
+    //fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
     //subM := now.Sub(t)
     v["topic"].(map[string]interface{})["Create_at"]=t.Format("2006-01-02 15:04:05")
     //fmt.Println(int(subM.Minutes()), "分钟") 
     timeString = v["topic"].(map[string]interface{})["last_reply_at"].(string)
-    t, err3 = time.Parse("2006-01-02T15:04:05-07:00", timeString)
+    t, _ = time.Parse("2006-01-02T15:04:05-07:00", timeString)
     fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
     v["topic"].(map[string]interface{})["last_reply_at"]=t.Format("2006-01-02 15:04:05")    
      
-    log.Println(err3)
-    log.Println(v["reply"].(map[string]interface{})["Author_id"])
+    //log.Println(err3)
+    //log.Println(v["reply"].(map[string]interface{})["Author_id"])
     if(v["reply"].(map[string]interface{})["Author_id"].(string)!=""){
       author, _ := userModel.GetUserById(v["reply"].(map[string]interface{})["Author_id"].(string))
       j,_:=json.Marshal(author)
@@ -320,7 +320,7 @@ func Index(c *gin.Context) {
       json.Unmarshal(j, &m)
       v["reply"].(map[string]interface{})["author"]=m
     }
-    log.Println(v["reply"]);
+    //log.Println(v["reply"]);
   }
   //log.Println(topicss)
   base_url:="/?tab="+tab+"&page="
@@ -329,12 +329,12 @@ func Index(c *gin.Context) {
   var pages int
   var err2 error
   temp,err2:=cache.Get(pagesCacheKey)
-  log.Println(err2)
+  //log.Println(err2)
   //log.Println(string(temp.([]byte)))
   
   if(err2!=nil){
     pages,_=topicModel.GetTopicByQueryCount(queryTab,good)
-    pages=int(math.Floor(float64(pages)/float64(20)))+1
+    pages=int(math.Floor(float64(pages)/float64(10)))+1
     cache.SetEx(pagesCacheKey,pages)
   }else{
     pages,_=strconv.Atoi(string(temp.([]byte)))
@@ -353,15 +353,15 @@ func Index(c *gin.Context) {
   }else{
     page_end=page_start+4
   }
-  pagesArray:=[]string{}
+  pagesArray:=[]int{}
   var i int
   for i =1;i<pages+1;i++{
-    pagesArray=append(pagesArray,strconv.Itoa(i))
+    pagesArray=append(pagesArray,i)
   }
   no_reply_topics2,err2:=cache.Get("no_reply_topics")
   json.Unmarshal(no_reply_topics2.([]byte),&no_reply_topics)
-  log.Println("temp")
-  log.Println(err2)
+  //log.Println("temp")
+  //log.Println(err2)
   //log.Println(temp)
   if(err2!=nil){
     no_reply_topics,_=topicModel.GetTopicNoReply()
@@ -369,7 +369,11 @@ func Index(c *gin.Context) {
     cache.SetEx("no_reply_topics",no_reply_topics_json)
   }
   tops,_:=userModel.GetUserTops()
-  //log.Println(tops)
+  log.Println(current_page)
+  log.Println(pages)
+  log.Println(page_start)
+  log.Println(page_end)
+  log.Println(pagesArray)
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title": "布局页面",
     "no_reply_topics":no_reply_topics,

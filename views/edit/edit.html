@@ -1,7 +1,7 @@
 {{ define "edit" }}
-{{ template "header" .}}
+{{ template "common/header" .}}
 <div id='main'>
-  {{ template "sidebar" .}}
+  {{ template "common/sidebar" .}}
   {{$edit:="edit"}}
   <div id='content'>
     <div class='panel'>
@@ -119,7 +119,7 @@
     // END 选择招聘版块时，给出提示
   })();
 </script>
-{{ template "footer" .}}
+{{ template "common/footer" .}}
 {{ end }}
 
 

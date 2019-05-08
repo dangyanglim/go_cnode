@@ -7,6 +7,8 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	//"encoding/json"
 	"time"
+	"github.com/russross/blackfriday"
+	"html/template"
 )
 
 //"log"
@@ -26,6 +28,7 @@ type Reply struct {
 type ReplyAndAuthor struct {
 	Reply  Reply
 	Author User
+	LinkContent template.HTML
 }
 type ReplyModel struct{}
 
@@ -42,12 +45,11 @@ func (p *ReplyModel) GetRepliesByTopicId(id string) (replies []Reply, replyAndAu
 	err = mgodb.C("replies").Find(bson.M{"topic_id": objectId}).All(&replies)
 	for _, v := range replies {
 		var temp ReplyAndAuthor
-		log.Println("aa")
 		author, _ := userModel.GetUserById(v.Author_id.Hex())
 		temp.Reply = v
+		temp.LinkContent= template.HTML(blackfriday.Run([]byte(temp.Reply.Content)))
 		temp.Author = author
 		replyAndAuthor = append(replyAndAuthor, temp)
-		log.Println(temp)
 	}
 	return replies, replyAndAuthor, err
 }
