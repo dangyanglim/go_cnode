@@ -206,7 +206,7 @@ func GithubSignup(c *gin.Context) {
 
 	url := AuthURL + "client_id=" + client_id + "&client_secret=" + client_secret
 	log.Println(url)
-	c.Redirect(http.StatusMovedPermanently, url)
+	c.Redirect(301, url)
 
 }
 

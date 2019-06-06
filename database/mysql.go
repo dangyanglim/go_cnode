@@ -1,15 +1,15 @@
 package database
 
 import (
-	"database/sql"
+	//"database/sql"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	_ "github.com/go-sql-driver/mysql"
+	//_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/mgo.v2"
-	"log"
+	//"log"
 )
 
-var SqlDB *sql.DB
+//var SqlDB *sql.DB
 var MogSession *mgo.Session
 var Redis redis.Conn
 
@@ -17,14 +17,14 @@ var Redis redis.Conn
 func init() {
 	var err error
 	var mgoerr error
-	SqlDB, err = sql.Open("mysql", "root@tcp(127.0.0.1:3306)/test?parseTime=true")
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	err = SqlDB.Ping()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	// SqlDB, err = sql.Open("mysql", "root@tcp(127.0.0.1:3306)/test?parseTime=true")
+	// if err != nil {
+	// 	log.Fatal(err.Error())
+	// }
+	// err = SqlDB.Ping()
+	// if err != nil {
+	// 	log.Fatal(err.Error())
+	// }
 	MogSession, mgoerr = mgo.Dial("120.78.15.36:27017")
 	if mgoerr != nil {
 		panic(mgoerr)

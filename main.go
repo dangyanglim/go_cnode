@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	defer db.SqlDB.Close()
+	//defer db.SqlDB.Close()
 	defer db.MogSession.Close()
 	defer db.Redis.Close()
 
