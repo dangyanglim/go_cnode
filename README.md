@@ -24,5 +24,6 @@ $ go run main.go router.go         # 访问 http://localhost:9035
 ```
 #### 功能介绍
 - Github登录  
+- Go 模块管理  
 - 
-
+![go.png](go.png)  
