@@ -8,7 +8,7 @@ http://cnodejs.org/ 是一个用nodejs语言编写的开源论坛
 go version 1.12.4  
 用了go mod 管理依赖  
 
-安装mysql  
+ 
 安装mongodb  
 安装redis   
  
@@ -25,5 +25,7 @@ $ go run main.go router.go         # 访问 http://localhost:9035
 #### 功能介绍
 - Github登录  
 - Go 模块管理  
-- 
+- 后台 Gin+mongodb+redis
+- 前台 bootstrap+jquery+渲染模板  
+
 ![go.png](go.png)  
