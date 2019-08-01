@@ -42,7 +42,7 @@ func (p *ReplyModel) GetRepliesByTopicId(id string) (replies []Reply, replyAndAu
 	//var replyAndAuthor []ReplyAndAuthor
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(id)
-	err = mgodb.C("replies").Find(bson.M{"topic_id": objectId}).All(&replies)
+	err = mgodb.C("replies").Find(bson.M{"topic_id": objectId}).Sort("_id").All(&replies)
 	for _, v := range replies {
 		var temp ReplyAndAuthor
 		author, _ := userModel.GetUserById(v.Author_id.Hex())

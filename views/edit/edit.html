@@ -102,6 +102,12 @@
         $('.tab-selector').css('color', 'red');
         return false;
       }
+      var title = $('#title').val();
+      if(!title){
+        alert('主题不能为空！');
+        $('.submit_btn').button('reset');
+        return false;        
+      }
     });
     // END 版块选择的检查，必须选择
     // 选择招聘版块时，给出提示
