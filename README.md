@@ -6,6 +6,9 @@ http://cnodejs.org/ 是一个用nodejs语言编写的开源论坛
 该项目部署在 http://fenghuangyu.cn:9035 账号密码admin   
 #### 安装
 go version 1.12.4  
+git version 2.19  
+go版本>1.11  
+git版本>2.17  
 用了go mod 管理依赖  
 
  
@@ -19,7 +22,7 @@ go version 1.12.4
 ```bash
 $ git clone https://github.com/dangyanglim/go_cnode.git
 $ cd go_cnode
-$ redis-server
+$ redis-server                     # 要安装redis
 $ go run main.go router.go         # 访问 http://localhost:9035
 ```
 #### 功能介绍
