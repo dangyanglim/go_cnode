@@ -12,7 +12,7 @@ replace golang.org/x/crypto => github.com/golang/crypto v0.0.0-20190422183909-d8
 
 replace golang.org/x/text => github.com/golang/text v0.3.0
 
-replace google.golang.org/appengine => github.com/golang/appengine
+replace google.golang.org/appengine => github.com/golang/appengine v1.5.0
 
 require (
 	github.com/garyburd/redigo v1.6.0
