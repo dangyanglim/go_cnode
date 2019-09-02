@@ -24,6 +24,7 @@ type Topic struct {
 	Visit_count     uint          `json:"visit_count"`
 	Collect_count   uint          `json:"collect_count"`
 	Create_at       time.Time     `bson:"create_at"`
+	Create_at_string string        `json:"create_at_string,omitempty"`
 	Update_at       string        `json:"update_at"`
 	Last_reply      bson.ObjectId `bson:"last_reply,omitempty"`
 	Last_reply_at   time.Time     `json:"last_reply_at,omitempty"`
@@ -99,6 +100,7 @@ func (p *TopicModel) GetTopicById(id string) (topic Topic, author User, replies 
 	err = mgodb.C("topics").Find(bson.M{"_id": objectId}).One(&topic)
 
 	author, _ = userModel.GetUserById(topic.Author_id.Hex())
+	topic.Create_at_string=topic.Create_at.Format("2006-01-02 15:04:05")
 	replies, repliyWithAuthors, _ = replyModel.GetRepliesByTopicId(topic.Id.Hex())
 	for _, v := range replies {
 		log.Println(v)

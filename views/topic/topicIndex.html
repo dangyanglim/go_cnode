@@ -83,7 +83,7 @@
               </span>
               <div class="changes">
                 <span>
-                  发布于 {{.topic.Topic.Create_at}}
+                  发布于 {{.topic.Topic.Create_at_string}}
                 </span>
                 <span>
                   作者 <a href="/user/{{.topic.Author.Loginname}}">{{.topic.Author.Loginname}}</a>
@@ -93,11 +93,15 @@
                 </span>
                 {{if .topic.Topic.Update_at}}
                   <span>
-                    最后一次编辑是 {{.topic.Topic.Update_at}}
+                    最后一次编辑是 {{.topic.Topic.Update_at_string}}
                   </span>
                 {{end}}
-                {{if .topic.Topic.Tab}}
-                  <span> 来自 {{.topic.Topic.Tab}}</span>
+                {{if eq .topic.Topic.Tab "share"}}
+                  <span> 来自 分享</span>
+                  {{else if eq .topic.Topic.Tab "job"}}
+                  <span> 来自 招聘</span>
+                  {{else if eq .topic.Topic.Tab "ask"}}
+                  <span> 来自 问答</span>
                 {{end}}  
                 {{if .current_user}}
                   <input class="span-common <%= is_collect ? '' : 'span-success' %> pull-right collect_btn" type="submit" value="<%= is_collect ? '取消收藏' : '收藏' %>" action="<%= is_collect ? 'de_collect' : 'collect' %>">

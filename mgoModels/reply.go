@@ -18,8 +18,10 @@ type Reply struct {
 	Topic_id        bson.ObjectId `bson:"topic_id"`
 	Reply_id        bson.ObjectId `bson:"reply_id,omitempty"`
 	Author_id       bson.ObjectId `bson:"author_id" `
-	Create_at       time.Time     `bson:"create_at"`
+	Create_at       time.Time     `bson:"create_at"` 
+	Create_at_string string        `json:"create_at_string,omitempty"`
 	Update_at       time.Time     `bson:"update_at"`
+	Update_at_string string        `json:"update_at_string,omitempty"`
 	Content         string        `json:"content"`
 	Content_is_html bool          `json:"content_is_html"`
 
@@ -47,6 +49,8 @@ func (p *ReplyModel) GetRepliesByTopicId(id string) (replies []Reply, replyAndAu
 		var temp ReplyAndAuthor
 		author, _ := userModel.GetUserById(v.Author_id.Hex())
 		temp.Reply = v
+		temp.Reply.Create_at_string= v.Create_at.Format("2006-01-02 15:04:05")
+		temp.Reply.Update_at_string= v.Update_at.Format("2006-01-02 15:04:05")
 		temp.LinkContent= template.HTML(blackfriday.Run([]byte(temp.Reply.Content)))
 		temp.Author = author
 		replyAndAuthor = append(replyAndAuthor, temp)
