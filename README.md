@@ -13,17 +13,35 @@ git版本>2.17
 安装mongodb  
 安装redis  
 
+## 使用
+ 
+### 使用命令行
+
+```bash
+$ git clone https://github.com/dangyanglim/go_cnode.git
+$ cd go_cnode
+$ redis-server                     # 要安装redis
+$ go run main.go router.go         # 访问 http://localhost:9035
+```
+#### 功能介绍
+- Github登录  
+- Go 模块管理  
+- 后台 Gin+mongodb+redis
+- 前台 bootstrap+jquery+渲染模板  
+
+![go.png](go.png)  
+
 ## 目录结构  
 ```
 │  .gitignore
-│  build.bat
-│  conf.json
+│  build.bat：生成linux执行文件
+│  conf.json：配置文件
 │  go.mod
 │  go.png
 │  go.sum
-│  main.go
+│  main.go：启动文件
 │  README.md
-│  router.go
+│  router.go：路由
 │
 ├─.vscode
 │      launch.json
@@ -238,20 +256,4 @@ git版本>2.17
  
   
  
-## 使用
- 
-### 使用命令行
 
-```bash
-$ git clone https://github.com/dangyanglim/go_cnode.git
-$ cd go_cnode
-$ redis-server                     # 要安装redis
-$ go run main.go router.go         # 访问 http://localhost:9035
-```
-#### 功能介绍
-- Github登录  
-- Go 模块管理  
-- 后台 Gin+mongodb+redis
-- 前台 bootstrap+jquery+渲染模板  
-
-![go.png](go.png)  
