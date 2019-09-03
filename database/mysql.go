@@ -12,9 +12,10 @@ import (
 //var SqlDB *sql.DB
 var MogSession *mgo.Session
 var Redis redis.Conn
-
-//var mgodb *mgo.Database
 func init() {
+}
+//var mgodb *mgo.Database
+func Config(mogo_url string,redis_url string) {
 	var err error
 	var mgoerr error
 	// SqlDB, err = sql.Open("mysql", "root@tcp(127.0.0.1:3306)/test?parseTime=true")
@@ -25,12 +26,12 @@ func init() {
 	// if err != nil {
 	// 	log.Fatal(err.Error())
 	// }
-	MogSession, mgoerr = mgo.Dial("120.78.15.36:27017")
+	MogSession, mgoerr = mgo.Dial(mogo_url)
 	if mgoerr != nil {
 		panic(mgoerr)
 	}
 	MogSession.SetMode(mgo.Monotonic, true)
-	Redis, err = redis.Dial("tcp", "127.0.0.1:6379")
+	Redis, err = redis.Dial("tcp", redis_url)
 	if err != nil {
 		fmt.Println("Connect to redis error", err)
 		return
