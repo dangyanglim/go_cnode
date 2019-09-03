@@ -9,7 +9,7 @@ go version 1.12.4
 git version 2.19  
 go版本>1.11  
 git版本>2.17  
-用了go mod 管理依赖 
+用了go mod 管理依赖  
 安装mongodb  
 安装redis  
 
