@@ -13,6 +13,7 @@ import (
 	"go_cnode/service/cache"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
+	"strings"
 	"github.com/russross/blackfriday"
 	"html/template"/*  */
 )
@@ -60,6 +61,9 @@ func Index(c *gin.Context) {
 	id := c.Param("id")
 	topic, author, replies, repliyWithAuthors, _ := topicModel.GetTopicById(id)
 	temp.Author = author
+	log.Println(topic.Content)
+	topic.Content=strings.Replace(topic.Content, "\r\n", "<br/>",-1 )
+	//temp.LinkContent=topic.Content
 	temp.LinkContent= template.HTML(blackfriday.Run([]byte(topic.Content)))
 	temp.Topic = topic
 	temp.Replies = replies
