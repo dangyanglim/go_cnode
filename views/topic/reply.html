@@ -2,7 +2,9 @@
 {{range $i,$v:=.topic.RepliyWithAuthors}}
 <div class='cell reply_area reply_item'>
   <div class='author_content'>
-    <a href="/user/{{$v.Author.Id}}" class="user_avatar">
+    <a href="/user/{{$v.Author.Loginname}}" class="user_avatar">
+      <img src="{{$v.Author.Avatar}}" title="{{$v.Author.Loginname}}"/>
+    </a>
 
     <div class='user_info'>
       <a class='dark reply_author' href="/user/{{$v.Author.Loginname}}">{{$v.Author.Loginname}}</a>

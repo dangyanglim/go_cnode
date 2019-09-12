@@ -9,6 +9,7 @@ import (
 	"time"
 	"github.com/russross/blackfriday"
 	"html/template"
+	"strings"
 )
 
 //"log"
@@ -51,6 +52,7 @@ func (p *ReplyModel) GetRepliesByTopicId(id string) (replies []Reply, replyAndAu
 		temp.Reply = v
 		temp.Reply.Create_at_string= v.Create_at.Format("2006-01-02 15:04:05")
 		temp.Reply.Update_at_string= v.Update_at.Format("2006-01-02 15:04:05")
+		temp.Reply.Content=strings.Replace(temp.Reply.Content, "\r\n", "<br/>",-1 )
 		temp.LinkContent= template.HTML(blackfriday.Run([]byte(temp.Reply.Content)))
 		temp.Author = author
 		replyAndAuthor = append(replyAndAuthor, temp)
