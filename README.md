@@ -21,7 +21,7 @@ git版本>2.17
 $ git clone https://github.com/dangyanglim/go_cnode.git
 $ cd go_cnode
 $ redis-server                     # 要安装redis
-$ go run main.go router.go         # 访问 http://localhost:9035
+$ go run main.go                   # 访问 http://localhost:9035
 ```
 #### 功能介绍
 - Github登录  
@@ -41,7 +41,7 @@ $ go run main.go router.go         # 访问 http://localhost:9035
 │  go.sum
 │  main.go：启动文件
 │  README.md
-│  router.go：路由
+│ 
 │
 ├─.vscode
 │      launch.json

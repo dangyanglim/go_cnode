@@ -4,6 +4,7 @@ import (
 	db "go_cnode/database"
 	"encoding/json"
 	"os"
+	"go_cnode/router"
 	//"log"
 )
 type configuration struct {
@@ -34,7 +35,7 @@ func main() {
 	defer db.MogSession.Close()
 	defer db.Redis.Close()
 
-	router := initRouter()
+	router := router.InitRouter()
 
 	// config := cors.DefaultConfig()
 	// config.AllowAllOrigins = true

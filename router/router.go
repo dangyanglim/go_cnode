@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"go_cnode/controllers/reply"
@@ -9,15 +9,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
 	"net/http"
+	"html/template"
 	// _ "net/http/pprof"
 	// "log"
 )
-
-func initRouter() *gin.Engine {
+func add(left int, right int) int{
+	return left+right
+}
+func InitRouter() *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.Default())
 	store := sessions.NewCookieStore([]byte("secret123"))
 	router.Use(sessions.Middleware("my_session", store))
+	//router.Delims("([{", "}])")//模板函数隔离符
+    router.SetFuncMap(template.FuncMap{"add": add})
 	router.LoadHTMLGlob("views/**/*")
 	router.StaticFS("/public", http.Dir("./public"))
 	router.StaticFile("/favicon.ico", "./public/images/cnode_icon_32.png")

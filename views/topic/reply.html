@@ -8,7 +8,7 @@
 
     <div class='user_info'>
       <a class='dark reply_author' href="/user/{{$v.Author.Loginname}}">{{$v.Author.Loginname}}</a>
-      <a class="reply_time" href="#{{$v.Reply.Id}}">{{$i}}楼•{{$v.Reply.Create_at_string}}</a>
+      <a class="reply_time" href="#{{$v.Reply.Id}}">{{add $i 1}}楼•{{$v.Reply.Create_at_string}}</a>
       {{if eq $v.Author.Loginname $.topic.Author.Loginname}}
         <span class="reply_by_author">作者</span>
       {{end}}
