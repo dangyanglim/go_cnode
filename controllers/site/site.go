@@ -259,6 +259,7 @@ func Index(c *gin.Context) {
   //var tops =[]string{"2","2"};
   tab:=c.Request.FormValue("tab")
   page:=c.Request.FormValue("page")
+  var pageSize=20;
   if(page==""){
     page="1"
   }  
@@ -287,15 +288,15 @@ func Index(c *gin.Context) {
     user,_=userModel.GetUserByName(name)
   }
   //log.Println(err)
-  topics:=make([]models.Topic,10)
+  topics:=make([]models.Topic,pageSize)
 
   //log.Println(queryTab)
   //log.Println(good)  
-  topics,_=topicModel.GetTopicByQuery(queryTab,good,(current_page-1)*10)
-  _,tempss,_:=topicModel.GetTopicBy(queryTab,good,(current_page-1)*10)
+  topics,_=topicModel.GetTopicByQuery(queryTab,good,pageSize,(current_page-1)*pageSize)
+  _,tempss,_:=topicModel.GetTopicBy(queryTab,good,pageSize,(current_page-1)*pageSize)
   var topicss []map[string]interface{}
   json.Unmarshal([]byte(tempss), &topicss)
-  
+  log.Println(len(topics))  
   //now := time.Now()
   for _,v:=range topicss{
     //log.Println(v["topic"].(map[string]interface{})["Create_at"])
@@ -334,7 +335,7 @@ func Index(c *gin.Context) {
   
   if(err2!=nil){
     pages,_=topicModel.GetTopicByQueryCount(queryTab,good)
-    pages=int(math.Floor(float64(pages)/float64(10)))+1
+    pages=int(math.Floor(float64(pages)/float64(pageSize)))+1
     cache.SetEx(pagesCacheKey,pages)
   }else{
     pages,_=strconv.Atoi(string(temp.([]byte)))

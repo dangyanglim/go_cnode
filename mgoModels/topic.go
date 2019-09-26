@@ -37,17 +37,17 @@ type TopicModel struct{}
 var userModel = new(UserModel)
 var replyModel = new(ReplyModel)
 
-func (p *TopicModel) GetTopicByQuery(tab string, good bool, skip int) (topics []Topic, err error) {
+func (p *TopicModel) GetTopicByQuery(tab string, good bool, limit int,skip int) (topics []Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-create_at").Limit(10).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-create_at").Limit(limit).Skip(skip).All(&topics)
 	} else {
-		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-create_at").Limit(10).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-create_at").Limit(limit).Skip(skip).All(&topics)
 	}
 	//log.Println(topics)
 	return topics, err
 }
-func (p *TopicModel) GetTopicBy(tab string, good bool, skip int) (topics []Topic, topicss []byte, err error) {
+func (p *TopicModel) GetTopicBy(tab string, good bool, limit int,skip int) (topics []Topic, topicss []byte, err error) {
 	type TopciAndAuthor struct {
 		Author User  `json:"author"`
 		Topic  Topic `json:"topic"`
@@ -56,9 +56,9 @@ func (p *TopicModel) GetTopicBy(tab string, good bool, skip int) (topics []Topic
 	var temps []TopciAndAuthor
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-create_at").Limit(10).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-create_at").Limit(limit).Skip(skip).All(&topics)
 	} else {
-		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-create_at").Limit(10).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-create_at").Limit(limit).Skip(skip).All(&topics)
 	}
 	//log.Println(topics)
 	for _, v := range topics {
