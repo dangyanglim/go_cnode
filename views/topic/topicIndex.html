@@ -110,8 +110,8 @@
               </div>
               {{ if .user}}
               <div id="manage_topic">
-                {{if 0}}
-                  <a href='/topic/{{.topic._id}}/top' data-method="post">
+                {{if eq .user.Name "admin"}}
+                  <a href='/topic/{{.topic.Topic.Id.Hex}}/top' >
                     {{if .topic.Topic.Top}}
                       <i class="fa fa-lg fa-star-o" title='取消置顶'></i>
                     {{else}}
@@ -120,7 +120,7 @@
                   </a>
         
         
-                  <a href='/topic/{{.topic._id}}/good' data-method="post">
+                  <a href='/topic/{{.topic.Topic.Id.Hex}}/good' data-method="get">
                     {{if .topic.Topic.Good}}
                       <i class="fa fa-lg fa-heart-o" title="取消精华"></i>
                     {{else}}
@@ -128,7 +128,7 @@
                     {{end}}
                   </a>
         
-                  <a href='/topic/{{.topic._id}}/lock' data-method="post">
+                  <a href='/topic/{{.topic.Topic.Id.Hex}}/lock' data-method="get">
                     {{if .topic.Topic.Lock}}
                       <i class="fa fa-lg fa-unlock" title='取消锁定'></i>
                     {{else}}
@@ -137,10 +137,10 @@
                   </a>
         
         
-                  <a href='/topic/{{.topic._id}}/edit'>
+                  <a href='/topic/{{.topic.Topic.Id.Hex}}/edit'>
                     <i class="fa fa-lg fa-pencil-square-o" title='编辑'></i></a>
                   <a href='javascript:;'
-                     data-id="{{.topic._id}}"
+                     data-id="{{.topic.Topic.Id}}"
                      class='delete_topic_btn'>
                      <i class="fa fa-lg fa-trash" title='删除'></i></a>
                 {{else}}

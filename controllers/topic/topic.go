@@ -59,7 +59,7 @@ func Index(c *gin.Context) {
 		user, _ = userModel.GetUserByName(name)
 	}
 	id := c.Param("id")
-	topic, author, replies, repliyWithAuthors, _ := topicModel.GetTopicById(id)
+	topic, author, replies, repliyWithAuthors, _ := topicModel.GetTopicByIdWithReply(id)
 	temp.Author = author
 	log.Println(topic.Content)
 	topic.Content=strings.Replace(topic.Content, "\r\n", "<br/>",-1 )
@@ -90,6 +90,40 @@ func Index(c *gin.Context) {
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
 		},
+	})
+}
+func Top(c *gin.Context) {
+	session := sessions.Get(c)
+	var name string
+	user := models.User{}
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
+	if user.Name!="admin"{
+		c.HTML(http.StatusOK, "notify", gin.H{
+			"error": "没权限",
+		})
+		return		
+	}
+	 id := c.Param("id")
+	 topic,err:=topicModel.GetTopicById(id)
+	 if err!=nil{
+		c.HTML(http.StatusOK, "notify", gin.H{
+			"error": "话题不存在",
+		})
+		return		 
+	 }
+	 topicModel.SetTop(id,!topic.Top)
+	 msg:=""
+	 if topic.Top{
+		msg = "此话题取消置顶成功。"
+	 }else{
+		msg = "此话题置顶成功。"
+	 }
+	 
+	c.HTML(http.StatusOK, "notify", gin.H{
+		"success": msg,
 	})
 }
 func Create(c *gin.Context) {

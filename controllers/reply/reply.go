@@ -54,7 +54,7 @@ func Index(c *gin.Context) {
 		user, _ = userModel.GetUserByName(name)
 	}
 	id := c.Param("id")
-	topic, author, replies, repliyWithAuthors, _ := topicModel.GetTopicById(id)
+	topic, author, replies, repliyWithAuthors, _ := topicModel.GetTopicByIdWithReply(id)
 	temp.Author = author
 	temp.Topic = topic
 	temp.Replies = replies
