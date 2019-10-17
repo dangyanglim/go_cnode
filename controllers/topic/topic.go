@@ -158,7 +158,7 @@ func Upload(c *gin.Context) {
 
 	id := user.Id.Hex()
 	log.Println(id)
-	picName := c.Request.FormValue("name")
+	//picName := c.Request.FormValue("name")
 	file, _ := c.FormFile("file")
 
 

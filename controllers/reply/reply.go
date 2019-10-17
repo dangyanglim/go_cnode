@@ -8,9 +8,9 @@ import (
 	"go_cnode/mgoModels"
 	//"github.com/dangyanglim/go_cnode/service/mail"
 	"encoding/json"
-	"go_cnode/service/cache"
 	"github.com/gin-gonic/gin"
 	"github.com/tommy351/gin-sessions"
+	"go_cnode/service/cache"
 )
 
 var userModel = new(models.UserModel)
@@ -116,35 +116,34 @@ func Edit(c *gin.Context) {
 	reply_id := c.Param("reply_id")
 	t_content := c.Request.FormValue("t_content")
 	user_id := c.Request.FormValue("user_id")
-	reply, _ := replyModel.GetReplyById(reply_id )
+	reply, _ := replyModel.GetReplyById(reply_id)
 
-	if reply.Author_id.Hex() !=user_id {
+	if reply.Author_id.Hex() != user_id {
 		c.HTML(http.StatusOK, "notify", gin.H{
 			"error": "你不能编辑此回复",
 		})
-		return			
+		return
 	}
 
 	replyModel.Update(t_content, reply_id)
-	
 
-	url := "/topic/" + reply.Topic_id.Hex()+"#"+reply.Id.Hex()
+	url := "/topic/" + reply.Topic_id.Hex() + "#" + reply.Id.Hex()
 	c.Redirect(301, url)
 }
 func ShowEdit(c *gin.Context) {
 	reply_id := c.Param("reply_id")
 	user_id := c.Request.FormValue("user_id")
-	reply, err := replyModel.GetReplyById(reply_id )
+	reply, err := replyModel.GetReplyById(reply_id)
 
-	if err!=nil {
+	if err != nil {
 		c.HTML(http.StatusOK, "notify", gin.H{
 			"error": "评论不存在",
 		})
-		return			
+		return
 	}
-		c.HTML(http.StatusOK, "reply/edit", gin.H{
-			"reply_id": reply.Id.Hex(),
-			"content":reply.Content,
-			"user_id":user_id,
-		})
+	c.HTML(http.StatusOK, "reply/edit", gin.H{
+		"reply_id": reply.Id.Hex(),
+		"content":  reply.Content,
+		"user_id":  user_id,
+	})
 }

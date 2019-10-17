@@ -1,20 +1,21 @@
 package router
 
 import (
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/tommy351/gin-sessions"
 	"go_cnode/controllers/reply"
 	"go_cnode/controllers/sign"
 	"go_cnode/controllers/site"
 	"go_cnode/controllers/topic"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/tommy351/gin-sessions"
-	"net/http"
 	"html/template"
+	"net/http"
 	// _ "net/http/pprof"
 	// "log"
 )
-func add(left int, right int) int{
-	return left+right
+
+func add(left int, right int) int {
+	return left + right
 }
 func InitRouter() *gin.Engine {
 	router := gin.Default()
@@ -22,7 +23,7 @@ func InitRouter() *gin.Engine {
 	store := sessions.NewCookieStore([]byte("secret123"))
 	router.Use(sessions.Middleware("my_session", store))
 	//router.Delims("([{", "}])")//模板函数隔离符
-    router.SetFuncMap(template.FuncMap{"add": add})
+	router.SetFuncMap(template.FuncMap{"add": add})
 	router.LoadHTMLGlob("views/**/*")
 	router.StaticFS("/public", http.Dir("./public"))
 	router.StaticFile("/favicon.ico", "./public/images/cnode_icon_32.png")
@@ -49,7 +50,7 @@ func InitRouter() *gin.Engine {
 	router.POST("/reply/:topic_id", reply.Add)
 	router.POST("/edit/reply/:reply_id", reply.Edit)
 	router.GET("/edit/reply/:reply_id", reply.ShowEdit)
-	router.POST("/upload", topic.Upload); // 上传图片
+	router.POST("/upload", topic.Upload) // 上传图片
 	// go func() {
 	//     log.Println(http.ListenAndServe("localhost:10000", nil))
 	// }()

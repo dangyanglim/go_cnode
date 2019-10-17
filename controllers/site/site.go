@@ -1,24 +1,24 @@
 package site
 
 import (
+	"log"
 	"net/http"
-  "log"
 	//. "github.com/dangyanglim/go_cnode/models"
-	"html/template"
 	"github.com/gin-gonic/gin"
-  //db "github.com/dangyanglim/go_cnode/database"
-  "github.com/russross/blackfriday"
-  "github.com/tommy351/gin-sessions"
-  "go_cnode/mgoModels"
-  "strconv"
-  "go_cnode/service/cache"
-  "encoding/json"
-  "math"
-  "time"
-  "fmt"
+	"html/template"
+	//db "github.com/dangyanglim/go_cnode/database"
+	"encoding/json"
+	"fmt"
+	"github.com/russross/blackfriday"
+	"github.com/tommy351/gin-sessions"
+	"go_cnode/mgoModels"
+	"go_cnode/service/cache"
+	"math"
+	"strconv"
+	"time"
 )
 
-var api =[]byte(`
+var api = []byte(`
 
 以下 api 路径均以 **https://cnodejs.org/api/v1** 为前缀
 
@@ -252,149 +252,151 @@ js
 `)
 var userModel = new(models.UserModel)
 var topicModel = new(models.TopicModel)
+
 func Index(c *gin.Context) {
-  //c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-  var no_reply_topics []models.Topic;
+	//c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+	var no_reply_topics []models.Topic
 
-  //var tops =[]string{"2","2"};
-  tab:=c.Request.FormValue("tab")
-  page:=c.Request.FormValue("page")
-  var pageSize=20;
-  if(page==""){
-    page="1"
-  }  
-  current_page, _ := strconv.Atoi(page)
+	//var tops =[]string{"2","2"};
+	tab := c.Request.FormValue("tab")
+	page := c.Request.FormValue("page")
+	var pageSize = 20
+	if page == "" {
+		page = "1"
+	}
+	current_page, _ := strconv.Atoi(page)
 
-  var queryTab string
-  if tab==""{
-    tab="all"
-  }
-  if tab=="all"{
-    
-  }else{
-    queryTab=tab
-  }
-  var good bool
-  if tab=="good"{
-    good=true
-  }
-  log.Println(tab) 
-  session := sessions.Get(c)
-  var name string
-  user:=models.User{}
-  log.Println(user)
-  if nil!=session.Get("loginname"){
-    name=session.Get("loginname").(string)
-    user,_=userModel.GetUserByName(name)
-  }
-  //log.Println(err)
-  topics:=make([]models.Topic,pageSize)
+	var queryTab string
+	if tab == "" {
+		tab = "all"
+	}
+	if tab == "all" {
 
-  //log.Println(queryTab)
-  //log.Println(good)  
-  topics,_=topicModel.GetTopicByQuery(queryTab,good,pageSize,(current_page-1)*pageSize)
-  _,tempss,_:=topicModel.GetTopicBy(queryTab,good,pageSize,(current_page-1)*pageSize)
-  var topicss []map[string]interface{}
-  json.Unmarshal([]byte(tempss), &topicss)
-  log.Println(len(topics))  
-  //now := time.Now()
-  for _,v:=range topicss{
-    //log.Println(v["topic"].(map[string]interface{})["Create_at"])
-    
-    timeString := v["topic"].(map[string]interface{})["Create_at"].(string)
-    t, _ := time.Parse("2006-01-02T15:04:05-07:00", timeString)
-    //fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
-    //subM := now.Sub(t)
-    v["topic"].(map[string]interface{})["Create_at"]=t.Format("2006-01-02 15:04:05")
-    //fmt.Println(int(subM.Minutes()), "分钟") 
-    timeString = v["topic"].(map[string]interface{})["last_reply_at"].(string)
-    t, _ = time.Parse("2006-01-02T15:04:05-07:00", timeString)
-    fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
-    v["topic"].(map[string]interface{})["last_reply_at"]=t.Format("2006-01-02 15:04:05")    
-     
-    //log.Println(err3)
-    //log.Println(v["reply"].(map[string]interface{})["Author_id"])
-    if(v["reply"].(map[string]interface{})["Author_id"].(string)!=""){
-      author, _ := userModel.GetUserById(v["reply"].(map[string]interface{})["Author_id"].(string))
-      j,_:=json.Marshal(author)
-      m := make(map[string]interface{})
-      json.Unmarshal(j, &m)
-      v["reply"].(map[string]interface{})["author"]=m
-    }
-    //log.Println(v["reply"]);
-  }
-  //log.Println(topicss)
-  base_url:="/?tab="+tab+"&page="
-  //var current_page int=1
-  pagesCacheKey:=queryTab+strconv.FormatBool(good)+"pages"
-  var pages int
-  var err2 error
-  temp,err2:=cache.Get(pagesCacheKey)
-  //log.Println(err2)
-  //log.Println(string(temp.([]byte)))
-  
-  if(err2!=nil){
-    pages,_=topicModel.GetTopicByQueryCount(queryTab,good)
-    pages=int(math.Floor(float64(pages)/float64(pageSize)))+1
-    cache.SetEx(pagesCacheKey,pages)
-  }else{
-    pages,_=strconv.Atoi(string(temp.([]byte)))
-  }
+	} else {
+		queryTab = tab
+	}
+	var good bool
+	if tab == "good" {
+		good = true
+	}
+	log.Println(tab)
+	session := sessions.Get(c)
+	var name string
+	user := models.User{}
+	log.Println(user)
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
+	//log.Println(err)
+	topics := make([]models.Topic, pageSize)
 
-  //log.Println(pages)
-  var page_start int
-  var page_end int
-  if (current_page-2)>0{
-    page_start=current_page-2
-  }else{
-    page_start=1
-  }
-  if(page_start+4)>pages{
-    page_end=pages
-  }else{
-    page_end=page_start+4
-  }
-  pagesArray:=[]int{}
-  var i int
-  for i =1;i<pages+1;i++{
-    pagesArray=append(pagesArray,i)
-  }
-  no_reply_topics2,err2:=cache.Get("no_reply_topics")
-  json.Unmarshal(no_reply_topics2.([]byte),&no_reply_topics)
-  //log.Println("temp")
-  //log.Println(err2)
-  //log.Println(temp)
-  if(err2!=nil){
-    no_reply_topics,_=topicModel.GetTopicNoReply()
-    no_reply_topics_json,_:=json.Marshal(no_reply_topics)
-    cache.SetEx("no_reply_topics",no_reply_topics_json)
-  }
-  tops,_:=userModel.GetUserTops()
-  log.Println(current_page)
-  log.Println(pages)
-  log.Println(page_start)
-  log.Println(page_end)
-  log.Println(pagesArray)
+	//log.Println(queryTab)
+	//log.Println(good)
+	topics, _ = topicModel.GetTopicByQuery(queryTab, good, pageSize, (current_page-1)*pageSize)
+	_, tempss, _ := topicModel.GetTopicBy(queryTab, good, pageSize, (current_page-1)*pageSize)
+	var topicss []map[string]interface{}
+	json.Unmarshal([]byte(tempss), &topicss)
+	log.Println(len(topics))
+	//now := time.Now()
+	for _, v := range topicss {
+		//log.Println(v["topic"].(map[string]interface{})["Create_at"])
+
+		timeString := v["topic"].(map[string]interface{})["Create_at"].(string)
+		t, _ := time.Parse("2006-01-02T15:04:05-07:00", timeString)
+		//fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
+		//subM := now.Sub(t)
+		v["topic"].(map[string]interface{})["Create_at"] = t.Format("2006-01-02 15:04:05")
+		//fmt.Println(int(subM.Minutes()), "分钟")
+		timeString = v["topic"].(map[string]interface{})["last_reply_at"].(string)
+		t, _ = time.Parse("2006-01-02T15:04:05-07:00", timeString)
+		fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
+		v["topic"].(map[string]interface{})["last_reply_at"] = t.Format("2006-01-02 15:04:05")
+
+		//log.Println(err3)
+		//log.Println(v["reply"].(map[string]interface{})["Author_id"])
+		if v["reply"].(map[string]interface{})["Author_id"].(string) != "" {
+			author, _ := userModel.GetUserById(v["reply"].(map[string]interface{})["Author_id"].(string))
+			j, _ := json.Marshal(author)
+			m := make(map[string]interface{})
+			json.Unmarshal(j, &m)
+			v["reply"].(map[string]interface{})["author"] = m
+		}
+		//log.Println(v["reply"]);
+	}
+	//log.Println(topicss)
+	base_url := "/?tab=" + tab + "&page="
+	//var current_page int=1
+	pagesCacheKey := queryTab + strconv.FormatBool(good) + "pages"
+	var pages int
+	var err2 error
+	temp, err2 := cache.Get(pagesCacheKey)
+	//log.Println(err2)
+	//log.Println(string(temp.([]byte)))
+
+	if err2 != nil {
+		pages, _ = topicModel.GetTopicByQueryCount(queryTab, good)
+		pages = int(math.Floor(float64(pages)/float64(pageSize))) + 1
+		cache.SetEx(pagesCacheKey, pages)
+	} else {
+		pages, _ = strconv.Atoi(string(temp.([]byte)))
+	}
+
+	//log.Println(pages)
+	var page_start int
+	var page_end int
+	if (current_page - 2) > 0 {
+		page_start = current_page - 2
+	} else {
+		page_start = 1
+	}
+	if (page_start + 4) > pages {
+		page_end = pages
+	} else {
+		page_end = page_start + 4
+	}
+	pagesArray := []int{}
+	var i int
+	for i = 1; i < pages+1; i++ {
+		pagesArray = append(pagesArray, i)
+	}
+	no_reply_topics2, err2 := cache.Get("no_reply_topics")
+	json.Unmarshal(no_reply_topics2.([]byte), &no_reply_topics)
+	//log.Println("temp")
+	//log.Println(err2)
+	//log.Println(temp)
+	if err2 != nil {
+		no_reply_topics, _ = topicModel.GetTopicNoReply()
+		no_reply_topics_json, _ := json.Marshal(no_reply_topics)
+		cache.SetEx("no_reply_topics", no_reply_topics_json)
+	}
+	tops, _ := userModel.GetUserTops()
+	log.Println(current_page)
+	log.Println(pages)
+	log.Println(page_start)
+	log.Println(page_end)
+	log.Println(pagesArray)
 	c.HTML(http.StatusOK, "index", gin.H{
-		"title": "布局页面",
-    "no_reply_topics":no_reply_topics,
-    "tops":tops,
-    "user":user,
-    "pagesArray":pagesArray,
-    "base_url":base_url,
-    "current_page":current_page,
-    "topics":topics,
-    "topicss":topicss,
-    "tab":tab,
-    "pages":pages,
-    "page_start":page_start,
-    "page_end":page_end,
+		"title":           "布局页面",
+		"no_reply_topics": no_reply_topics,
+		"tops":            tops,
+		"user":            user,
+		"pagesArray":      pagesArray,
+		"base_url":        base_url,
+		"current_page":    current_page,
+		"topics":          topics,
+		"topicss":         topicss,
+		"tab":             tab,
+		"pages":           pages,
+		"page_start":      page_start,
+		"page_end":        page_end,
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
 		},
 	})
 }
-var getstart =[]byte(`
+
+var getstart = []byte(`
 ## Node.js 入门
 
 《**汇智网 Node.js 课程**》
@@ -449,7 +451,7 @@ https://github.com/cnodejs/nodeclub/wiki/%E5%90%8D%E4%BA%BA%E5%A0%82
 
 新手搭建 Node.js 服务器，推荐使用无需备案的 [DigitalOcean(https://www.digitalocean.com/)](https://www.digitalocean.com/?refcode=eba02656eeb3)		
 `)
-var about =[]byte(`
+var about = []byte(`
 ### 关于
 CNode 社区为国内最大最具影响力的 Node.js 开源技术社区，致力于 Node.js 的技术研究。
 
@@ -471,68 +473,68 @@ CNode 的 SLA 保证是，一个9，即 90.000000%。
 
 另，安卓用户同时可选择：https://github.com/TakWolf/CNode-Material-Design ，这是 Java 原生开发的安卓客户端。		
 `)
+
 func About(c *gin.Context) {
-  output := template.HTML(blackfriday.Run(about))
-  session := sessions.Get(c)
-  var name string
-  user:=models.User{}
-  //var err error
-  log.Println(user)
-  if nil!=session.Get("loginname"){
-    name=session.Get("loginname").(string)
-    user,_=userModel.GetUserByName(name)
-  }
+	output := template.HTML(blackfriday.Run(about))
+	session := sessions.Get(c)
+	var name string
+	user := models.User{}
+	//var err error
+	log.Println(user)
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
 	c.HTML(http.StatusOK, "about", gin.H{
 		"title": "布局页面",
-    "about":    output,
-    "user":user,
+		"about": output,
+		"user":  user,
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
-		},   
+		},
 	})
 }
 
 func Api(c *gin.Context) {
 
-   output := template.HTML(blackfriday.Run(api))
-   session := sessions.Get(c)
-   var name string
-   user:=models.User{}
-   //var err error
-   log.Println(user)
-   if nil!=session.Get("loginname"){
-     name=session.Get("loginname").(string)
-     user,_=userModel.GetUserByName(name)
-   } 
-   c.HTML(http.StatusOK, "api", gin.H{
-	   "title": "布局页面",
-     "api":    output,
-     "user":user,
-     "config": gin.H{
+	output := template.HTML(blackfriday.Run(api))
+	session := sessions.Get(c)
+	var name string
+	user := models.User{}
+	//var err error
+	log.Println(user)
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
+	c.HTML(http.StatusOK, "api", gin.H{
+		"title": "布局页面",
+		"api":   output,
+		"user":  user,
+		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
-		},     
-   })
+		},
+	})
 }
 func Getstart(c *gin.Context) {
 
-  output := template.HTML(blackfriday.Run(getstart))
-  session := sessions.Get(c)
-  var name string
-  user:=models.User{}
-  //var err error
-  log.Println(user)
-  if nil!=session.Get("loginname"){
-    name=session.Get("loginname").(string)
-    user,_=userModel.GetUserByName(name)
-  }
+	output := template.HTML(blackfriday.Run(getstart))
+	session := sessions.Get(c)
+	var name string
+	user := models.User{}
+	//var err error
+	log.Println(user)
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
 
 	c.HTML(http.StatusOK, "getstart", gin.H{
-		"title": "布局页面",
-    "getstart":    output,
-    "user":user,
+		"title":    "布局页面",
+		"getstart": output,
+		"user":     user,
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
-		},    
+		},
 	})
- }
-
+}

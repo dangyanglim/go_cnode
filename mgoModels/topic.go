@@ -13,41 +13,41 @@ import (
 //"log"
 
 type Topic struct {
-	Id              bson.ObjectId `bson:"_id"`
-	Title           string        `json:"title"`
-	Content         string        `json:"content" `
-	Author_id       bson.ObjectId `bson:"author_id" `
-	Top             bool          `json:"top" `
-	Good            bool          `json:"good" `
-	Lock            bool          `json:"lock"`
-	Reply_count     uint          `json:"reply_count"`
-	Visit_count     uint          `json:"visit_count"`
-	Collect_count   uint          `json:"collect_count"`
-	Create_at       time.Time     `bson:"create_at"`
+	Id               bson.ObjectId `bson:"_id"`
+	Title            string        `json:"title"`
+	Content          string        `json:"content" `
+	Author_id        bson.ObjectId `bson:"author_id" `
+	Top              bool          `json:"top" `
+	Good             bool          `json:"good" `
+	Lock             bool          `json:"lock"`
+	Reply_count      uint          `json:"reply_count"`
+	Visit_count      uint          `json:"visit_count"`
+	Collect_count    uint          `json:"collect_count"`
+	Create_at        time.Time     `bson:"create_at"`
 	Create_at_string string        `json:"create_at_string,omitempty"`
-	Update_at       string        `json:"update_at"`
-	Last_reply      bson.ObjectId `bson:"last_reply,omitempty"`
-	Last_reply_at   time.Time     `json:"last_reply_at,omitempty"`
-	Content_is_html bool          `json:"content_is_html"`
-	Tab             string        `json:"tab"`
-	Deleted         bool          `json:"deleted"`
+	Update_at        string        `json:"update_at"`
+	Last_reply       bson.ObjectId `bson:"last_reply,omitempty"`
+	Last_reply_at    time.Time     `json:"last_reply_at,omitempty"`
+	Content_is_html  bool          `json:"content_is_html"`
+	Tab              string        `json:"tab"`
+	Deleted          bool          `json:"deleted"`
 }
 type TopicModel struct{}
 
 var userModel = new(UserModel)
 var replyModel = new(ReplyModel)
 
-func (p *TopicModel) GetTopicByQuery(tab string, good bool, limit int,skip int) (topics []Topic, err error) {
+func (p *TopicModel) GetTopicByQuery(tab string, good bool, limit int, skip int) (topics []Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-top","-create_at").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
 	} else {
-		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-top","-create_at").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
 	}
 	//log.Println(topics)
 	return topics, err
 }
-func (p *TopicModel) GetTopicBy(tab string, good bool, limit int,skip int) (topics []Topic, topicss []byte, err error) {
+func (p *TopicModel) GetTopicBy(tab string, good bool, limit int, skip int) (topics []Topic, topicss []byte, err error) {
 	type TopciAndAuthor struct {
 		Author User  `json:"author"`
 		Topic  Topic `json:"topic"`
@@ -56,9 +56,9 @@ func (p *TopicModel) GetTopicBy(tab string, good bool, limit int,skip int) (topi
 	var temps []TopciAndAuthor
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-top","-create_at").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
 	} else {
-		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-top","-create_at").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
 	}
 	//log.Println(topics)
 	for _, v := range topics {
@@ -75,7 +75,7 @@ func (p *TopicModel) GetTopicBy(tab string, good bool, limit int,skip int) (topi
 	}
 	//log.Println(temps)
 	topicss, _ = json.Marshal(temps)
-	
+
 	return topics, topicss, err
 }
 func (p *TopicModel) GetTopicByQueryCount(tab string, good bool) (count int, err error) {
@@ -93,14 +93,13 @@ func (p *TopicModel) GetTopicByQueryCount(tab string, good bool) (count int, err
 // 	Author models.User
 // 	Reply  models.Reply
 // }
-func (p *TopicModel) GetTopicById(id string) (topic Topic ,err error) {
+func (p *TopicModel) GetTopicById(id string) (topic Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(id)
 
 	err = mgodb.C("topics").Find(bson.M{"_id": objectId}).One(&topic)
 
-
-	return topic,  err
+	return topic, err
 }
 func (p *TopicModel) GetTopicByIdWithReply(id string) (topic Topic, author User, replies []Reply, repliyWithAuthors []ReplyAndAuthor, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
@@ -109,7 +108,7 @@ func (p *TopicModel) GetTopicByIdWithReply(id string) (topic Topic, author User,
 	err = mgodb.C("topics").Find(bson.M{"_id": objectId}).One(&topic)
 
 	author, _ = userModel.GetUserById(topic.Author_id.Hex())
-	topic.Create_at_string=topic.Create_at.Format("2006-01-02 15:04:05")
+	topic.Create_at_string = topic.Create_at.Format("2006-01-02 15:04:05")
 	replies, repliyWithAuthors, _ = replyModel.GetRepliesByTopicId(topic.Id.Hex())
 	// for _, v := range replies {
 	// 	log.Println(v)
@@ -176,7 +175,7 @@ func (p *TopicModel) UpdateVisitCount(id string) (err error) {
 	log.Println(err)
 	return err
 }
-func (p *TopicModel) SetTop(id string,value bool) (err error) {
+func (p *TopicModel) SetTop(id string, value bool) (err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(id)
 
