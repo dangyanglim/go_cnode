@@ -47,6 +47,8 @@ func InitRouter() *gin.Engine {
 	router.POST("/topic/create", topic.Create)
 	router.GET("/active_account", sign.ActiveAccount) // 帐号激活
 	router.POST("/reply/:topic_id", reply.Add)
+	router.POST("/edit/reply/:reply_id", reply.Edit)
+	router.GET("/edit/reply/:reply_id", reply.ShowEdit)
 	router.POST("/upload", topic.Upload); // 上传图片
 	// go func() {
 	//     log.Println(http.ListenAndServe("localhost:10000", nil))

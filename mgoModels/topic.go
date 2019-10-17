@@ -40,9 +40,9 @@ var replyModel = new(ReplyModel)
 func (p *TopicModel) GetTopicByQuery(tab string, good bool, limit int,skip int) (topics []Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-create_at").Sort("-top").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-top","-create_at").Limit(limit).Skip(skip).All(&topics)
 	} else {
-		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-create_at").Sort("-top").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-top","-create_at").Limit(limit).Skip(skip).All(&topics)
 	}
 	//log.Println(topics)
 	return topics, err
@@ -56,9 +56,9 @@ func (p *TopicModel) GetTopicBy(tab string, good bool, limit int,skip int) (topi
 	var temps []TopciAndAuthor
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-create_at").Sort("-top").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-top","-create_at").Limit(limit).Skip(skip).All(&topics)
 	} else {
-		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-create_at").Sort("-top").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-top","-create_at").Limit(limit).Skip(skip).All(&topics)
 	}
 	//log.Println(topics)
 	for _, v := range topics {

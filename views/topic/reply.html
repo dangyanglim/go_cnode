@@ -21,7 +21,7 @@
         </span>
       </span>
       {{if $.user}}
-      <a href='/reply/{{$v.Reply.Id.Hex}}/edit' class='edit_reply_btn'>
+      <a href='/edit/reply/{{$v.Reply.Id.Hex}}?user_id={{$.user.Id.Hex}}' class='edit_reply_btn'>
         <i class="fa fa-pencil-square-o" title='编辑'></i>
       </a>
       <a href='javascript:void(0);' class='delete_reply_btn'>
@@ -41,8 +41,8 @@
   <div class='clearfix'>
     <div class='reply2_area'>
       {{if $.user}}
-      <form class='reply2_form' action='/{{$.topic.Topic.Id.Hex}}/reply' method='post'>
-        <input type='hidden' name='_csrf' value='<%= csrf %>'/>
+      <form class='reply2_form' action='/reply/{{$.topic.Topic.Id.Hex}}' method='post'>
+        <input type='hidden' name='user_id' value='{{$.user.Id.Hex}}'/>
         <input type='hidden' name='reply_id' value='{{$v.Reply.Id}}'/>
 
         <div class='markdown_editor in_editor'>

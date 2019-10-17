@@ -1,7 +1,7 @@
 package models
 
 import (
-	"log"
+	//"log"
 
 	db "go_cnode/database"
 	"gopkg.in/mgo.v2/bson"
@@ -77,8 +77,19 @@ func (p *ReplyModel) NewAndSave(content string, topic_id string, user_id string,
 	}
 	mgodb := db.MogSession.DB("egg_cnode")
 	err = mgodb.C("replies").Insert(&reply)
-	log.Println(reply)
-	log.Println(err)
+
 
 	return reply, err
+}
+func (p *ReplyModel) Update(content string, reply_id string) ( err error) {
+
+	objectId := bson.ObjectIdHex(reply_id)
+
+	mgodb := db.MogSession.DB("egg_cnode")
+	err = mgodb.C("replies").Update(bson.M{"_id": objectId},
+		bson.M{
+			"$set": bson.M{"update_at": time.Now(),"content":   content},
+		})
+
+	return  err
 }

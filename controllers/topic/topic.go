@@ -134,9 +134,8 @@ func Create(c *gin.Context) {
 		name = session.Get("loginname").(string)
 		user, _ = userModel.GetUserByName(name)
 	}
-	log.Println(user)
 	id := user.Id.Hex()
-	log.Println(id)
+
 	tab := c.Request.FormValue("tab")
 	title := c.Request.FormValue("title")
 	content := c.Request.FormValue("content")
@@ -156,13 +155,12 @@ func Upload(c *gin.Context) {
 		name = session.Get("loginname").(string)
 		user, _ = userModel.GetUserByName(name)
 	}
-	log.Println(user)
+
 	id := user.Id.Hex()
 	log.Println(id)
 	picName := c.Request.FormValue("name")
 	file, _ := c.FormFile("file")
-	log.Println(file.Filename)
-	log.Println(picName)
+
 
 	//创建文件
 	// fW, err := os.Create(upload_path + file.Filename)

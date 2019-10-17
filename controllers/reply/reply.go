@@ -105,11 +105,46 @@ func Add(c *gin.Context) {
 	topic_id := c.Param("topic_id")
 	r_content := c.Request.FormValue("r_content")
 	user_id := c.Request.FormValue("user_id")
-	log.Println(topic_id)
-	log.Println(r_content)
 	reply, _ := replyModel.NewAndSave(r_content, topic_id, user_id, "")
 	topicModel.UpdateReplyCount(topic_id, reply.Id)
 
 	url := "/topic/" + topic_id
 	c.Redirect(301, url)
+}
+func Edit(c *gin.Context) {
+
+	reply_id := c.Param("reply_id")
+	t_content := c.Request.FormValue("t_content")
+	user_id := c.Request.FormValue("user_id")
+	reply, _ := replyModel.GetReplyById(reply_id )
+
+	if reply.Author_id.Hex() !=user_id {
+		c.HTML(http.StatusOK, "notify", gin.H{
+			"error": "你不能编辑此回复",
+		})
+		return			
+	}
+
+	replyModel.Update(t_content, reply_id)
+	
+
+	url := "/topic/" + reply.Topic_id.Hex()+"#"+reply.Id.Hex()
+	c.Redirect(301, url)
+}
+func ShowEdit(c *gin.Context) {
+	reply_id := c.Param("reply_id")
+	user_id := c.Request.FormValue("user_id")
+	reply, err := replyModel.GetReplyById(reply_id )
+
+	if err!=nil {
+		c.HTML(http.StatusOK, "notify", gin.H{
+			"error": "评论不存在",
+		})
+		return			
+	}
+		c.HTML(http.StatusOK, "reply/edit", gin.H{
+			"reply_id": reply.Id.Hex(),
+			"content":reply.Content,
+			"user_id":user_id,
+		})
 }
