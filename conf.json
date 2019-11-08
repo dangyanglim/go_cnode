@@ -1,5 +1,14 @@
 {
     "mongo_url": "120.78.15.36:27017",
     "redis_url": "127.0.0.1:6379",
-    "port": ":9035"
+    "port": ":9035",
+    "smtp_username":"dangyanglim@qq.com",
+    "smtp_password":"uicmeimalcnybgdj",
+    "smtp_hostname":"smtp.qq.com",
+    "smtp_active_Url":"http://fenghuangyu.cn:9035/active_account",
+    "github_client_id":"bafc506847f325223094",
+    "github_client_secret":"172d5424cc25be8c8ac8095b40d79fea859588ea",
+    "github_AuthURL":"https://github.com/login/oauth/authorize?",
+    "github_UserURL":"https://api.github.com/user?",
+    "github_TokenURL":"https://github.com/login/oauth/access_token?"
   }

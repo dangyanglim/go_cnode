@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"regexp"
 	"time"
+	"go_cnode/utils"
 )
 
 var userModel = new(models.UserModel)
@@ -200,9 +201,10 @@ func Signup(c *gin.Context) {
 }
 
 func GithubSignup(c *gin.Context) {
-	client_id := "bafc506847f325223094"
-	client_secret := "172d5424cc25be8c8ac8095b40d79fea859588ea"
-	AuthURL := "https://github.com/login/oauth/authorize?"
+	conf := utils.LoadConf()
+	client_id := conf.Github_client_id
+	client_secret := conf.Github_client_secret
+	AuthURL := conf.Github_AuthURL
 
 	url := AuthURL + "client_id=" + client_id + "&client_secret=" + client_secret
 	log.Println(url)
@@ -221,10 +223,11 @@ type Token struct {
 }
 
 func GithubCallBack(c *gin.Context) {
-	TokenURL := "https://github.com/login/oauth/access_token?"
-	UserURL := "https://api.github.com/user?"
-	client_id := "bafc506847f325223094"
-	client_secret := "172d5424cc25be8c8ac8095b40d79fea859588ea"
+	conf := utils.LoadConf()
+	TokenURL := conf.Github_TokenURL
+	UserURL := conf.Github_UserURL
+	client_id := conf.Github_client_id
+	client_secret := conf.Github_client_secret
 	code := c.Request.FormValue("code")
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,

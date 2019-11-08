@@ -1,4 +1,4 @@
-package dysms
+package utils
 
 import (
 	"crypto/hmac"

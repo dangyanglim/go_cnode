@@ -15,6 +15,7 @@ import (
 
 	"log"
 	"net"
+	"go_cnode/utils"
 )
 
 var userModel = new(models.UserModel)
@@ -78,22 +79,23 @@ func SendMailViaTLS(addr string, auth smtp.Auth, from string,
 }
 
 func SendActiveMail(who string, token string, name string) {
-	auth := smtp.PlainAuth("", "dangyanglim@qq.com", "uicmeimalcnybgdj", "smtp.qq.com")
+	conf := utils.LoadConf()
+	auth := smtp.PlainAuth("", conf.Smtp_username, conf.Smtp_password, conf.Smtp_hostname)
 	to := []string{who}
 	nickname := name
-	user := "dangyanglim@qq.com"
+	user := conf.Smtp_username
 	subject := "Go_Cnode社区账号激活"
 	content_type := "Content-Type: text/html; charset=UTF-8"
 	body := "<p>您好：" + name + "</p>" +
 		"<p>我们收到您在Go_Cnode社区的注册信息，请点击下面的链接来激活帐户：</p>" +
-		"<a href  ='http://fenghuangyu.cn:9035/active_account?key=" + token + "&name=" + name + "'>激活链接</a>" +
+		"<a href  ='"+conf.Smtp_active_Url+"?key=" + token + "&name=" + name + "'>激活链接</a>" +
 		"<p>若您没有在Go_Cnode社区填写过注册信息，说明有人滥用了您的电子邮箱，请删除此邮件，我们对给您造成的打扰感到抱歉。</p>" +
 		"<p>Go_Cnode社区 谨上。</p>"
 	msg := []byte("To: " + strings.Join(to, ",") + "\r\nFrom: " + nickname +
 		"<" + user + ">\r\nSubject: " + subject + "\r\n" + content_type + "\r\n\r\n" + body)
 	//err := smtp.SendMail("smtp.qq.com:465", auth, user, to, msg)
 	err := SendMailViaTLS(
-		"smtp.qq.com:465",
+		conf.Smtp_hostname+":465",
 		auth,
 		user,
 		to,
