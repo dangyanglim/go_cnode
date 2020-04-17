@@ -1,0 +1,48 @@
+{{ define "userTop100" }}
+{{ template "common/header" .}}
+<div id='main'>
+  {{ template "common/sidebar" .}}
+  <div id='content'>
+    <div class='panel'>
+      <div class='header'>
+        <ul class='breadcrumb'>
+          <li><a href='/'>主页</a><span class='divider'>/</span></li>
+          <li class='active'>Top100 积分榜</li>
+        </ul>
+      </div>
+      <div class='inner'>
+        {{if .users}}
+        <table class='table table-condensed table-striped'>
+          <thead>
+            <th>#</th>
+            <th>用户名</th>
+            <th>积分</th>
+            <th>主题数</th>
+            <th>评论数</th>
+          </thead>
+          <tbody>
+            {{range $i,$v:=.users}}
+            <tr>
+              <td><b>{{$i}}</b></td>
+              <td>
+                <a class='user_avatar' href="/user/{{$v.Loginname}}">
+                  <img src="{{$v.Avatar}}" title="{{$v.Loginname}}"/>
+                </a>
+                <span class='sp10'></span>
+                <a href='/user/{{$v.Loginname}}'>{{$v.Loginname}}</a></td>
+              <td>{{$v.Score}}</td>
+              <td>{{$v.Topic_count}}</td>
+              <td>{{$v.Reply_count}}</td>
+            </tr>
+            {{end}}          
+          </tbody>
+        </table>
+        {{else}}
+        <p>还没有用户</p>
+        {{end}}
+      </div>      
+    </div>
+  </div>
+</div>
+{{ template "common/footer" .}}
+{{ end }}

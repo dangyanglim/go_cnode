@@ -8,7 +8,6 @@ import (
 	"html/template"
 	//db "github.com/dangyanglim/go_cnode/database"
 	"encoding/json"
-	"fmt"
 	"github.com/russross/blackfriday"
 	"github.com/tommy351/gin-sessions"
 	"go_cnode/mgoModels"
@@ -278,6 +277,8 @@ func Index(c *gin.Context) {
 	var good bool
 	if tab == "good" {
 		good = true
+	}else{
+		good=false
 	}
 	log.Println(tab)
 	session := sessions.Get(c)
@@ -290,31 +291,17 @@ func Index(c *gin.Context) {
 	}
 	//log.Println(err)
 	topics := make([]models.Topic, pageSize)
-
-	//log.Println(queryTab)
-	//log.Println(good)
 	topics, _ = topicModel.GetTopicByQuery(queryTab, good, pageSize, (current_page-1)*pageSize)
 	_, tempss, _ := topicModel.GetTopicBy(queryTab, good, pageSize, (current_page-1)*pageSize)
 	var topicss []map[string]interface{}
 	json.Unmarshal([]byte(tempss), &topicss)
-	log.Println(len(topics))
-	//now := time.Now()
 	for _, v := range topicss {
-		//log.Println(v["topic"].(map[string]interface{})["Create_at"])
-
 		timeString := v["topic"].(map[string]interface{})["Create_at"].(string)
 		t, _ := time.Parse("2006-01-02T15:04:05-07:00", timeString)
-		//fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
-		//subM := now.Sub(t)
 		v["topic"].(map[string]interface{})["Create_at"] = t.Format("2006-01-02 15:04:05")
-		//fmt.Println(int(subM.Minutes()), "分钟")
 		timeString = v["topic"].(map[string]interface{})["last_reply_at"].(string)
 		t, _ = time.Parse("2006-01-02T15:04:05-07:00", timeString)
-		fmt.Printf("%+v\n", t.Format("2006-01-02 15:04:05"))
 		v["topic"].(map[string]interface{})["last_reply_at"] = t.Format("2006-01-02 15:04:05")
-
-		//log.Println(err3)
-		//log.Println(v["reply"].(map[string]interface{})["Author_id"])
 		if v["reply"].(map[string]interface{})["Author_id"].(string) != "" {
 			author, _ := userModel.GetUserById(v["reply"].(map[string]interface{})["Author_id"].(string))
 			j, _ := json.Marshal(author)
@@ -331,9 +318,6 @@ func Index(c *gin.Context) {
 	var pages int
 	var err2 error
 	temp, err2 := cache.Get(pagesCacheKey)
-	//log.Println(err2)
-	//log.Println(string(temp.([]byte)))
-
 	if err2 != nil {
 		pages, _ = topicModel.GetTopicByQueryCount(queryTab, good)
 		pages = int(math.Floor(float64(pages)/float64(pageSize))) + 1
@@ -341,8 +325,6 @@ func Index(c *gin.Context) {
 	} else {
 		pages, _ = strconv.Atoi(string(temp.([]byte)))
 	}
-
-	//log.Println(pages)
 	var page_start int
 	var page_end int
 	if (current_page - 2) > 0 {
@@ -362,20 +344,12 @@ func Index(c *gin.Context) {
 	}
 	no_reply_topics2, err2 := cache.Get("no_reply_topics")
 	json.Unmarshal(no_reply_topics2.([]byte), &no_reply_topics)
-	//log.Println("temp")
-	//log.Println(err2)
-	//log.Println(temp)
 	if err2 != nil {
 		no_reply_topics, _ = topicModel.GetTopicNoReply()
 		no_reply_topics_json, _ := json.Marshal(no_reply_topics)
 		cache.SetEx("no_reply_topics", no_reply_topics_json)
 	}
-	tops, _ := userModel.GetUserTops()
-	log.Println(current_page)
-	log.Println(pages)
-	log.Println(page_start)
-	log.Println(page_end)
-	log.Println(pagesArray)
+	tops, _ := userModel.GetUserTops(10)
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title":           "布局页面",
 		"no_reply_topics": no_reply_topics,

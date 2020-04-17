@@ -3,7 +3,6 @@ package models
 import (
 	//"log"
 	"log"
-
 	"encoding/json"
 	db "go_cnode/database"
 	"gopkg.in/mgo.v2/bson"
@@ -36,6 +35,13 @@ type TopicModel struct{}
 
 var userModel = new(UserModel)
 var replyModel = new(ReplyModel)
+var topicModel = new(TopicModel)
+
+type TopciAndAuthor struct {
+	Author User  `json:"author"`
+	Topic  Topic `json:"topic"`
+	Reply  Reply `json:"reply"`
+}
 
 func (p *TopicModel) GetTopicByQuery(tab string, good bool, limit int, skip int) (topics []Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
@@ -48,11 +54,7 @@ func (p *TopicModel) GetTopicByQuery(tab string, good bool, limit int, skip int)
 	return topics, err
 }
 func (p *TopicModel) GetTopicBy(tab string, good bool, limit int, skip int) (topics []Topic, topicss []byte, err error) {
-	type TopciAndAuthor struct {
-		Author User  `json:"author"`
-		Topic  Topic `json:"topic"`
-		Reply  Reply `json:"reply"`
-	}
+
 	var temps []TopciAndAuthor
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
@@ -73,7 +75,6 @@ func (p *TopicModel) GetTopicBy(tab string, good bool, limit int, skip int) (top
 
 		temps = append(temps, temp)
 	}
-	//log.Println(temps)
 	topicss, _ = json.Marshal(temps)
 
 	return topics, topicss, err
@@ -81,9 +82,29 @@ func (p *TopicModel) GetTopicBy(tab string, good bool, limit int, skip int) (top
 func (p *TopicModel) GetTopicByQueryCount(tab string, good bool) (count int, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		count, err = mgodb.C("topics").Find(bson.M{"good": good}).Count()
-	} else {
-		count, err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Count()
+		count, err = mgodb.C("topics").Find(bson.M{}).Count()
+	}else {
+		if good==true {
+			count, err = mgodb.C("topics").Find(bson.M{"good": good}).Count()
+		}else {
+			count, err = mgodb.C("topics").Find(bson.M{"tab": tab}).Count()
+		}
+		
+	}
+
+	return count, err
+}
+func (p *TopicModel) GetTopicByAuthorQueryCount(objectId bson.ObjectId,tab string, good bool) (count int, err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+	if tab == "" || tab == "all" {
+		count, err = mgodb.C("topics").Find(bson.M{"author_id": objectId}).Count()
+	}else {
+		if good==true {
+			count, err = mgodb.C("topics").Find(bson.M{"author_id": objectId,"good": good}).Count()
+		}else {
+			count, err = mgodb.C("topics").Find(bson.M{"author_id": objectId,"tab": tab}).Count()
+		}
+		
 	}
 
 	return count, err
@@ -96,9 +117,7 @@ func (p *TopicModel) GetTopicByQueryCount(tab string, good bool) (count int, err
 func (p *TopicModel) GetTopicById(id string) (topic Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(id)
-
 	err = mgodb.C("topics").Find(bson.M{"_id": objectId}).One(&topic)
-
 	return topic, err
 }
 func (p *TopicModel) GetTopicByIdWithReply(id string) (topic Topic, author User, replies []Reply, repliyWithAuthors []ReplyAndAuthor, err error) {
@@ -110,14 +129,6 @@ func (p *TopicModel) GetTopicByIdWithReply(id string) (topic Topic, author User,
 	author, _ = userModel.GetUserById(topic.Author_id.Hex())
 	topic.Create_at_string = topic.Create_at.Format("2006-01-02 15:04:05")
 	replies, repliyWithAuthors, _ = replyModel.GetRepliesByTopicId(topic.Id.Hex())
-	// for _, v := range replies {
-	// 	log.Println(v)
-	// 	author2, _ := userModel.GetUserById(v.Author_id.Hex())
-	// 	log.Println(author2)
-	// }
-	//log.Println(topic)
-	//log.Println(author)
-
 	return topic, author, replies, repliyWithAuthors, err
 }
 func (p *TopicModel) NewAndSave(title string, tab string, id string, content string) (topic Topic, err error) {
@@ -148,9 +159,64 @@ func (p *TopicModel) GetAuthorOtherTopics(author_id string, topic_id string) (to
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(author_id)
 	topic_objectId := bson.ObjectIdHex(topic_id)
-	err = mgodb.C("topics").Find(bson.M{"author_id": objectId, "_id": bson.M{"$nin": []bson.ObjectId{topic_objectId}}}).Limit(5).Sort("last_reply_at").All(&topics)
-
+	err = mgodb.C("topics").Find(bson.M{"author_id": objectId, "_id": bson.M{"$nin": []bson.ObjectId{topic_objectId}}}).Limit(5).Sort("-last_reply_at").All(&topics)
 	return topics, err
+}
+func (p *TopicModel) GetAuthorTopics(author_id string,limit int,skip int) (topics []Topic,topicss []byte, err error) {
+	var temps []TopciAndAuthor
+	mgodb := db.MogSession.DB("egg_cnode")
+	objectId := bson.ObjectIdHex(author_id)
+	err = mgodb.C("topics").Find(bson.M{"author_id": objectId}).Skip(skip).Limit(limit).Sort("-create_at").All(&topics)
+	for _, v := range topics {
+		var temp TopciAndAuthor
+		temp.Topic = v
+		author, _ := userModel.GetUserById(v.Author_id.Hex())
+		temp.Author = author
+		if v.Last_reply.Hex() != "" {
+			reply, _ := replyModel.GetReplyById(v.Last_reply.Hex())
+			temp.Reply = reply
+		}
+
+		temps = append(temps, temp)
+	}
+	topicss, _ = json.Marshal(temps)	
+	return topics,topicss, err
+}
+func (p *TopicModel) GetReplyTopics(author_id string,limit int,skip int,most int) (topicss []byte, err error) {
+	var temps []TopciAndAuthor
+	var replies []Reply
+	var topic_ids map[bson.ObjectId]int
+	var topic_id_ints []bson.ObjectId
+	topic_ids=make(map[bson.ObjectId]int)
+	mgodb := db.MogSession.DB("egg_cnode")
+	objectId := bson.ObjectIdHex(author_id)
+	err = mgodb.C("replies").Find(bson.M{"author_id": objectId}).Sort("-create_at").Skip(skip).Limit(limit).All(&replies)
+	for i:=0;i<len(replies);i++ {
+		if _, ok := topic_ids[replies[i].Topic_id];ok {
+		}else{
+			topic_ids[replies[i].Topic_id]=len(topic_ids)+1
+			topic_id_ints=append(topic_id_ints,replies[i].Topic_id)
+		}	
+		if(len(topic_ids)==most){
+			break;
+		}
+	}
+	for j:=0;j< len(topic_id_ints);j++ {
+		topic,err2:=topicModel.GetTopicById(topic_id_ints[j].Hex())
+		if(err2==nil&&topic.Author_id.Hex()!=""){		
+			var temp TopciAndAuthor
+			temp.Topic = topic
+			author, _ := userModel.GetUserById(topic.Author_id.Hex())
+			temp.Author = author
+			if topic.Last_reply.Hex() != "" {
+				reply, _ := replyModel.GetReplyById(topic.Last_reply.Hex())
+				temp.Reply = reply
+			}
+			temps = append(temps, temp)	
+		}		
+	}
+	topicss, _ = json.Marshal(temps)
+	return topicss, err
 }
 func (p *TopicModel) UpdateReplyCount(id string, replyId bson.ObjectId) (err error) {
 	mgodb := db.MogSession.DB("egg_cnode")

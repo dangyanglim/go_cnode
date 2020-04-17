@@ -92,3 +92,11 @@ func (p *ReplyModel) Update(content string, reply_id string) (err error) {
 
 	return err
 }
+func (p *ReplyModel) GetReplyByAuthorQueryCount(objectId bson.ObjectId) (count int, err error) {
+	mgodb := db.MogSession.DB("egg_cnode")
+
+	count, err = mgodb.C("replies").Find(bson.M{"author_id": objectId}).Count()
+
+
+	return count, err
+}

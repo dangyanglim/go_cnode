@@ -3,10 +3,10 @@
 
 <div class='user_card'>
   <div>
-      <a class='user_avatar' href="/user/{{.user.Loginname}} ">
+      <a class='user_avatar' href="/user/{{.user.Loginname}}">
         <img src="{{.user.Avatar}}" title="{{.user.Loginname}}"/>
       </a>
-      <span class='user_name'><a class='dark' > {{.user.Loginname}}</a></span>    
+      <span class='user_name'><a class='dark' href="/user/{{.user.Loginname}}"> {{.user.Loginname}}</a></span>    
     <div class='board clearfix'>
       <div class='floor'>
           <span class='big'>积分:  {{.user.Score }} </span>

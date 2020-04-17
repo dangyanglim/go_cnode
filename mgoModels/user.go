@@ -6,6 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
 	"log"
+	"time"
 )
 
 //"log"
@@ -19,13 +20,22 @@ type User struct {
 	Avatar            string        `json:"avatar" `
 	AccessToken       string        `json:"accessToken"`
 	Score             uint          `json:"score"`
+	Collect_topic_count uint         `json:"collect_topic_count"`
+	Topic_count uint         `json:"topic_count"`
+	Reply_count uint         `json:"reply_count"`
 	Active            bool          `json:"active"`
 	Is_block          bool          `json:"is_block"`
 	GithubUsername    string        `json:"githubUsername,omitempty"`
 	GithubAccessToken string        `json:"githubAccessToken,omitempty"`
 	GithubId          int           `json:"githubId,omitempty"`
+	Url             string        `json:"url"`
+	Location             string        `json:"location"`
+	Weibo             string        `json:"weibo"`
+	Create_at        time.Time     `bson:"create_at"`
+	Is_star            string        `json:"is_star"`
 }
 type UserModel struct{}
+
 
 func (p *UserModel) GetUserByGithubId(id int) (user User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
@@ -35,14 +45,13 @@ func (p *UserModel) GetUserByGithubId(id int) (user User, err error) {
 }
 func (p *UserModel) GetUserById(id string) (user User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
-	log.Println(id)
 	objectId := bson.ObjectIdHex(id)
 	err = mgodb.C("users").Find(bson.M{"_id": objectId}).One(&user)
 	return user, err
 }
-func (p *UserModel) GetUserTops() (users []User, err error) {
+func (p *UserModel) GetUserTops(limit int) (users []User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
-	err = mgodb.C("users").Find(bson.M{}).Limit(10).Sort("-score").All(&users)
+	err = mgodb.C("users").Find(bson.M{}).Sort("-score").Limit(limit).All(&users)
 	return users, err
 }
 func (p *UserModel) GetUserByName(name string) (user User, err error) {
@@ -73,6 +82,7 @@ func (p *UserModel) NewAndSave(name string, loginname string, email string, pass
 		Email:       email,
 		Active:      active,
 		AccessToken: u2.String(),
+		Create_at: time.Now(),
 	}
 	err = mgodb.C("users").Insert(&user)
 	log.Println(err)
@@ -91,6 +101,7 @@ func (p *UserModel) GithubNewAndSave(name string, loginname string, email string
 		Active:      active,
 		AccessToken: u2.String(),
 		GithubId:    githubId,
+		Create_at: time.Now(),
 	}
 	err = mgodb.C("users").Insert(&user)
 	log.Println(err)

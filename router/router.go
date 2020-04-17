@@ -8,6 +8,7 @@ import (
 	"go_cnode/controllers/sign"
 	"go_cnode/controllers/site"
 	"go_cnode/controllers/topic"
+	"go_cnode/controllers/user"
 	"html/template"
 	"net/http"
 	// _ "net/http/pprof"
@@ -51,6 +52,10 @@ func InitRouter() *gin.Engine {
 	router.POST("/edit/reply/:reply_id", reply.Edit)
 	router.GET("/edit/reply/:reply_id", reply.ShowEdit)
 	router.POST("/upload", topic.Upload) // 上传图片
+	router.GET("/user/:name",user.Index)//个人主页
+	router.GET("/user/:name/topics",user.Topics)//
+	router.GET("/user/:name/replies",user.Replies)
+	router.GET("/users/top100",user.Top100)
 	// go func() {
 	//     log.Println(http.ListenAndServe("localhost:10000", nil))
 	// }()

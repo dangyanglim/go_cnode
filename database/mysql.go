@@ -3,11 +3,20 @@ package database
 import (
 	//"database/sql"
 	"fmt"
+	"log"
 	"github.com/garyburd/redigo/redis"
 	//_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/mgo.v2"
 	//"log"
 )
+
+type MongoLog struct {
+}
+
+func (MongoLog)Output(calldepth int, s string) error {
+	log.SetFlags(log.Lshortfile)
+	return log.Output(calldepth,s)
+}
 
 //var SqlDB *sql.DB
 var MogSession *mgo.Session
@@ -37,9 +46,12 @@ func Config(mogo_url string,redis_url string) {
 		return
 	}
 
+	
 	//  defer mogSession.Close()
 	//  session.SetMode(mgo.Monotonic, true)
 	//  mgodb = session.DB("egg_cnode")
 	//  countNum, _ :=mgodb.C("users").Count()
 	//  log.Println(countNum)
+	mgo.SetDebug(false)  // 设置DEBUG模式
+	//mgo.SetLogger(new(MongoLog)) // 设置日志. 	
 }
