@@ -140,7 +140,7 @@
                   <a href='/topic/{{.topic.Topic.Id.Hex}}/edit'>
                     <i class="fa fa-lg fa-pencil-square-o" title='编辑'></i></a>
                   <a href='javascript:;'
-                     data-id="{{.topic.Topic.Id}}"
+                     data-id="{{.topic.Topic.Id.Hex}}"
                      class='delete_topic_btn'>
                      <i class="fa fa-lg fa-trash" title='删除'></i></a>
                 {{else}}
@@ -214,7 +214,7 @@
       </div>
     </div>         
 </div>
-<script type="text/javascript" src="/public/editor.min.js"></script>
+<!--script type="text/javascript" src="/public/editor.min.js"></script-->
 <script type="text/javascript" src="/public/libs/editor/editor.js"></script>
 <script type="text/javascript" src="/public/libs/webuploader/webuploader.withoutimage.js"></script>
 <script type="text/javascript" src="/public/libs/editor/ext.js"></script>
@@ -326,6 +326,7 @@
       if (confirm('确定要删除此回复吗？')) {
         var reply_id = null;
         if ($me.hasClass('delete_reply_btn')) {
+          console.log($me.closest('.reply_item'))
           reply_id = $me.closest('.reply_item').attr('reply_id');
         }
         if ($me.hasClass('delete_reply2_btn')) {
@@ -335,7 +336,7 @@
           reply_id: reply_id,
           _csrf: "<%- csrf %>"
         };
-        $.post('/reply/' + reply_id + '/delete', data, function (data) {
+        $.post( '/delete'+'/reply/' + reply_id, data, function (data) {
           if (data.status === 'success') {
             if ($me.hasClass('delete_reply_btn')) {
               $me.closest('.reply_item').remove();
@@ -353,7 +354,7 @@
     $('.delete_topic_btn').click(function () {
       var topicId = $(this).data('id');
       if (topicId && confirm('确定要删除此话题吗？')) {
-        $.post('/topic/' + topicId + '/delete', { _csrf: $('#_csrf').val() }, function (result) {
+        $.post('/delete'+'/topic/' + topicId  , { _csrf: $('#_csrf').val() }, function (result) {
           if (!result.success) {
             alert(result.message);
           } else {

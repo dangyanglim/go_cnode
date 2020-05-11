@@ -45,11 +45,13 @@ func InitRouter() *gin.Engine {
 	router.GET("/getstart", site.Getstart)
 	router.GET("/topic/:id", topic.Index)
 	router.GET("/topic/:id/top", topic.Top)
+	router.POST("/delete/topic/:id", topic.Detele)
 	router.GET("/topics/create", topic.ShowCreate)
 	router.POST("/topic/create", topic.Create)
 	router.GET("/active_account", sign.ActiveAccount) // 帐号激活
 	router.POST("/reply/:topic_id", reply.Add)
 	router.POST("/edit/reply/:reply_id", reply.Edit)
+	router.POST("/delete/reply/:reply_id", reply.Delete)
 	router.GET("/edit/reply/:reply_id", reply.ShowEdit)
 	router.POST("/upload", topic.Upload) // 上传图片
 	router.GET("/user/:name",user.Index)//个人主页

@@ -16,6 +16,9 @@ import (
 )
 
 var userModel = new(models.UserModel)
+var messageModel = new(models.MessageModel)
+var topicModel = new(models.TopicModel)
+var replyModel = new(models.ReplyModel)
 
 func ShowSignup(c *gin.Context) {
 
@@ -113,14 +116,62 @@ func Message(c *gin.Context) {
 	var name string
 	user := models.User{}
 	//var err error
-
+	type ReadMessage struct{
+		models.Message
+		Author models.User
+		Topic models.Topic
+		Reply models.Reply
+	}
 	if nil != session.Get("loginname") {
 		name = session.Get("loginname").(string)
 		user, _ = userModel.GetUserByName(name)
 	}
-	log.Println(user)
+	var hasReadMessages []ReadMessage
+	var hasUnReadMessages []ReadMessage
+	readMessageResults,_:=messageModel.GetMessagesByUserId(user.Id)
+	
+	unReadMessageResults,_:=messageModel.GetUnreadMessagesByUserId(user.Id)
+	for _,readMessageResult:= range readMessageResults {
+		author,_:=userModel.GetUserById(readMessageResult.Author_id.Hex())
+		topic,_:=topicModel.GetTopicById(readMessageResult.Topic_id.Hex())
+		reply,_:=replyModel.GetReplyById(readMessageResult.Reply_id.Hex())
+		var hasReadMessage ReadMessage
+		hasReadMessage.Type=readMessageResult.Type
+		hasReadMessage.Has_read=readMessageResult.Has_read
+		hasReadMessage.Id=readMessageResult.Id
+		hasReadMessage.Master_id=readMessageResult.Master_id
+		hasReadMessage.Author_id=readMessageResult.Author_id
+		hasReadMessage.Topic_id=readMessageResult.Topic_id
+		hasReadMessage.Topic_id=readMessageResult.Topic_id
+		hasReadMessage.Create_at=readMessageResult.Create_at		
+		hasReadMessage.Author=author
+		hasReadMessage.Topic=topic
+		hasReadMessage.Reply=reply
+		hasReadMessages=append(hasReadMessages,hasReadMessage)
+	}
+	for _,unReadMessageResult:= range unReadMessageResults {
+		author,_:=userModel.GetUserById(unReadMessageResult.Author_id.Hex())
+		topic,_:=topicModel.GetTopicById(unReadMessageResult.Topic_id.Hex())
+		reply,_:=replyModel.GetReplyById(unReadMessageResult.Reply_id.Hex())
+		var hasUnReadMessage ReadMessage
+		hasUnReadMessage.Type=unReadMessageResult.Type
+		hasUnReadMessage.Has_read=unReadMessageResult.Has_read
+		hasUnReadMessage.Id=unReadMessageResult.Id
+		hasUnReadMessage.Master_id=unReadMessageResult.Master_id
+		hasUnReadMessage.Author_id=unReadMessageResult.Author_id
+		hasUnReadMessage.Topic_id=unReadMessageResult.Topic_id
+		hasUnReadMessage.Topic_id=unReadMessageResult.Topic_id
+		hasUnReadMessage.Create_at=unReadMessageResult.Create_at
+		hasUnReadMessage.Author=author
+		hasUnReadMessage.Topic=topic
+		hasUnReadMessage.Reply=reply
+		hasUnReadMessages=append(hasUnReadMessages,hasUnReadMessage)
+	}
+	messageModel.UpdateMessagesToRead(user.Id.Hex(),unReadMessageResults)
 	c.HTML(http.StatusOK, "message_index", gin.H{
 		"title": "布局页面",
+		"has_read_messages":hasReadMessages,
+		"hasnot_read_messages":hasUnReadMessages,
 		"user":  user,
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",

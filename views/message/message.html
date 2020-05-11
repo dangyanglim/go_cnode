@@ -1,0 +1,38 @@
+{{ define "message" }}
+{{if .Has_read}}
+<div class='cell' message_id='{{.Id}}'>
+{{else}}
+<div class='cell message' message_id='{{.Id}}'>
+{{end}}
+    {{ if eq .Type "reply"}}
+    <span>
+      <a href="/user/{{.Author.Loginname}}" target='_blank'>{{.Author.Loginname}}</a>
+      回复了你的话题
+      <a href="/topic/{{.Topic.Id.Hex}}#{{.Reply.Id.Hex}}" target='_blank'>
+          {{.Topic.Title}}</a>
+    </span>
+    {{end}}
+    {{ if eq .Type  "reply2"}}
+    <span>
+      <a href="/user/{{.Author.Loginname}}" target='_blank'>{{.Author.Loginname}}</a>
+      在话题
+      <a href="/topic/{{.Topic.Id.Hex}}#{{.Reply.Id.Hex}}" target='_blank'>{{.Topic.Title}}</a>
+      中回复了你的回复
+    </span>
+    {{end}}
+    {{ if eq .Type  "follow"}}
+    <span>
+      <a href="/user/{{.Author.Loginname}}" target='_blank'>{{.Author.Loginname}}</a>
+      关注了你
+    </span>
+    {{end}}
+    {{if eq .Type  "at"}}
+    <span>
+      <a href="/user/{{.Author.Loginname}}" target='_blank'>{{.Author.Loginname}}</a>
+      在话题
+      <a href="/topic/{{.Topic.Id.Hex}}#{{.Reply.Id.Hex}}" target='_blank'>{{.Topic.Title}}</a>
+      中@了你
+    </span>
+    {{end}}
+  </div>
+{{ end }}

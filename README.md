@@ -2,7 +2,7 @@
 
 #### 项目介绍
 http://cnodejs.org/ 是一个用nodejs语言编写的开源论坛  
-打算是用golang语言重写  
+打算是用golang语言仿写  
 项目部署在 http://fenghuangyu.cn:9035 账号密码admin   
 #### 安装
 go version 1.12.4  

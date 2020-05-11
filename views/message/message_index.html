@@ -11,6 +11,9 @@
             </ul>
           </div>
           {{if .hasnot_read_messages}}
+            {{range $i,$message:=.hasnot_read_messages}}
+              {{ template "message" $message}}
+            {{end}}
             <!-- <% hasnot_read_messages.map((message, index) => { %>
               <%- include('./message.html', { message, index }) %>
             <%}) %> -->
@@ -25,9 +28,9 @@
             <span class='col_fade'>过往信息</span>
           </div>
           {{if .has_read_messages}}
-          <!-- <% has_read_messages.map((message, index) => { %>
-            <%- include('./message.html', { message, index }) %>
-          <%}) %> -->
+            {{range $i,$message:=.has_read_messages}}
+            {{ template "message" $message}}
+           {{end}}
           {{else}}
           <div class='inner'>
             <p>无消息</p>

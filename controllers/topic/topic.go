@@ -61,7 +61,6 @@ func Index(c *gin.Context) {
 	id := c.Param("id")
 	topic, author, replies, repliyWithAuthors, _ := topicModel.GetTopicByIdWithReply(id)
 	temp.Author = author
-	log.Println(topic.Content)
 	topic.Content=strings.Replace(topic.Content, "\r\n", "<br/>",-1 )
 	//temp.LinkContent=topic.Content
 	temp.LinkContent= template.HTML(blackfriday.Run([]byte(topic.Content)))
@@ -77,7 +76,6 @@ func Index(c *gin.Context) {
 		no_reply_topics_json, _ := json.Marshal(no_reply_topics)
 		cache.SetEx("no_reply_topics", no_reply_topics_json)
 	}
-	log.Println(temp)
 	topicModel.UpdateVisitCount(id)
 	other_topics, _ := topicModel.GetAuthorOtherTopics(author.Id.Hex(), id)
 	c.HTML(http.StatusOK, "topicIndex", gin.H{
@@ -125,6 +123,39 @@ func Top(c *gin.Context) {
 	c.HTML(http.StatusOK, "notify", gin.H{
 		"success": msg,
 	})
+}
+func Detele(c *gin.Context) {
+	session := sessions.Get(c)
+	var name string
+	user := models.User{}
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
+	var msg struct {
+		Message string `json:"message"`
+		Success bool `json:"success"`
+	}	
+	 id := c.Param("id")
+	 topic,err:=topicModel.GetTopicById(id)
+
+	 if err!=nil{
+		msg.Message = "此话题不存在"
+		msg.Success=false
+		c.JSON(http.StatusOK, msg)
+		return		 
+	 }
+	 if topic.Author_id.Hex()!=user.Id.Hex() {
+		msg.Message = "无权限"
+		msg.Success=false
+		c.JSON(http.StatusForbidden, msg)
+		return			 
+	 }
+
+	 topicModel.Delete(id)
+	 msg.Message = "话题删除成功"
+	 msg.Success=true
+	 c.JSON(http.StatusOK, msg)
 }
 func Create(c *gin.Context) {
 	session := sessions.Get(c)

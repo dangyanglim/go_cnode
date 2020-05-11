@@ -1,6 +1,6 @@
 {{define "reply"}}
 {{range $i,$v:=.topic.RepliyWithAuthors}}
-<div class='cell reply_area reply_item'>
+<div class='cell reply_area reply_item' reply_id="{{$v.Reply.Id.Hex}}">
   <div class='author_content'>
     <a href="/user/{{$v.Author.Loginname}}" class="user_avatar">
       <img src="{{$v.Author.Avatar}}" title="{{$v.Author.Loginname}}"/>
@@ -21,12 +21,14 @@
         </span>
       </span>
       {{if $.user}}
+      {{if eq $.user.Id.Hex $v.Author.Id.Hex}}
       <a href='/edit/reply/{{$v.Reply.Id.Hex}}?user_id={{$.user.Id.Hex}}' class='edit_reply_btn'>
         <i class="fa fa-pencil-square-o" title='编辑'></i>
       </a>
       <a href='javascript:void(0);' class='delete_reply_btn'>
         <i class="fa fa-trash" title='删除'></i>
       </a>
+      {{end}}
       {{end}}
       <span>
         {{if $.user}}

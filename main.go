@@ -7,8 +7,6 @@ import (
 	//"log"
 )
 
-
-
 func main() {
 	conf := utils.LoadConf()
 	db.Config(conf.Mongo_url, conf.Redis_url)

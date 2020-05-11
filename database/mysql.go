@@ -21,6 +21,7 @@ func (MongoLog)Output(calldepth int, s string) error {
 //var SqlDB *sql.DB
 var MogSession *mgo.Session
 var Redis redis.Conn
+var Mgodb *mgo.Database
 func init() {
 }
 //var mgodb *mgo.Database
@@ -40,6 +41,7 @@ func Config(mogo_url string,redis_url string) {
 		panic(mgoerr)
 	}
 	MogSession.SetMode(mgo.Monotonic, true)
+	Mgodb=MogSession.DB("egg_cnode")
 	Redis, err = redis.Dial("tcp", redis_url)
 	if err != nil {
 		fmt.Println("Connect to redis error", err)

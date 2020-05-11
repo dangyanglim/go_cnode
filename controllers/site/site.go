@@ -251,7 +251,7 @@ js
 `)
 var userModel = new(models.UserModel)
 var topicModel = new(models.TopicModel)
-
+var messageModel = new(models.MessageModel)
 func Index(c *gin.Context) {
 	//c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 	var no_reply_topics []models.Topic
@@ -284,7 +284,7 @@ func Index(c *gin.Context) {
 	session := sessions.Get(c)
 	var name string
 	user := models.User{}
-	log.Println(user)
+	
 	if nil != session.Get("loginname") {
 		name = session.Get("loginname").(string)
 		user, _ = userModel.GetUserByName(name)
@@ -350,6 +350,8 @@ func Index(c *gin.Context) {
 		cache.SetEx("no_reply_topics", no_reply_topics_json)
 	}
 	tops, _ := userModel.GetUserTops(10)
+	log.Println(user)
+	
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title":           "布局页面",
 		"no_reply_topics": no_reply_topics,

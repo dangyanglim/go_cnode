@@ -2,10 +2,10 @@ package models
 
 import (
 	//"log"
-	"log"
 	"encoding/json"
 	db "go_cnode/database"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 	"time"
 )
 
@@ -46,9 +46,9 @@ type TopciAndAuthor struct {
 func (p *TopicModel) GetTopicByQuery(tab string, good bool, limit int, skip int) (topics []Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"good": good,"deleted":false}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
 	} else {
-		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good,"deleted":false}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
 	}
 	//log.Println(topics)
 	return topics, err
@@ -58,9 +58,9 @@ func (p *TopicModel) GetTopicBy(tab string, good bool, limit int, skip int) (top
 	var temps []TopciAndAuthor
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		err = mgodb.C("topics").Find(bson.M{"good": good}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"good": good,"deleted":false}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
 	} else {
-		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
+		err = mgodb.C("topics").Find(bson.M{"tab": tab, "good": good,"deleted":false}).Sort("-top", "-create_at").Limit(limit).Skip(skip).All(&topics)
 	}
 	//log.Println(topics)
 	for _, v := range topics {
@@ -82,29 +82,29 @@ func (p *TopicModel) GetTopicBy(tab string, good bool, limit int, skip int) (top
 func (p *TopicModel) GetTopicByQueryCount(tab string, good bool) (count int, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		count, err = mgodb.C("topics").Find(bson.M{}).Count()
-	}else {
-		if good==true {
-			count, err = mgodb.C("topics").Find(bson.M{"good": good}).Count()
-		}else {
-			count, err = mgodb.C("topics").Find(bson.M{"tab": tab}).Count()
+		count, err = mgodb.C("topics").Find(bson.M{"deleted":false}).Count()
+	} else {
+		if good == true {
+			count, err = mgodb.C("topics").Find(bson.M{"good": good,"deleted":false}).Count()
+		} else {
+			count, err = mgodb.C("topics").Find(bson.M{"tab": tab,"deleted":false}).Count()
 		}
-		
+
 	}
 
 	return count, err
 }
-func (p *TopicModel) GetTopicByAuthorQueryCount(objectId bson.ObjectId,tab string, good bool) (count int, err error) {
+func (p *TopicModel) GetTopicByAuthorQueryCount(objectId bson.ObjectId, tab string, good bool) (count int, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	if tab == "" || tab == "all" {
-		count, err = mgodb.C("topics").Find(bson.M{"author_id": objectId}).Count()
-	}else {
-		if good==true {
-			count, err = mgodb.C("topics").Find(bson.M{"author_id": objectId,"good": good}).Count()
-		}else {
-			count, err = mgodb.C("topics").Find(bson.M{"author_id": objectId,"tab": tab}).Count()
+		count, err = mgodb.C("topics").Find(bson.M{"author_id": objectId,"deleted":false}).Count()
+	} else {
+		if good == true {
+			count, err = mgodb.C("topics").Find(bson.M{"author_id": objectId, "good": good,"deleted":false}).Count()
+		} else {
+			count, err = mgodb.C("topics").Find(bson.M{"author_id": objectId, "tab": tab,"deleted":false}).Count()
 		}
-		
+
 	}
 
 	return count, err
@@ -115,7 +115,8 @@ func (p *TopicModel) GetTopicByAuthorQueryCount(objectId bson.ObjectId,tab strin
 // 	Reply  models.Reply
 // }
 func (p *TopicModel) GetTopicById(id string) (topic Topic, err error) {
-	mgodb := db.MogSession.DB("egg_cnode")
+	//mgodb := db.MogSession.DB("egg_cnode")
+	mgodb:=db.Mgodb
 	objectId := bson.ObjectIdHex(id)
 	err = mgodb.C("topics").Find(bson.M{"_id": objectId}).One(&topic)
 	return topic, err
@@ -151,7 +152,7 @@ func (p *TopicModel) NewAndSave(title string, tab string, id string, content str
 func (p *TopicModel) GetTopicNoReply() (topics []Topic, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 
-	err = mgodb.C("topics").Find(bson.M{"reply_count": 0}).Limit(5).All(&topics)
+	err = mgodb.C("topics").Find(bson.M{"reply_count": 0}).Sort("-create_at").Limit(5).All(&topics)
 
 	return topics, err
 }
@@ -159,14 +160,14 @@ func (p *TopicModel) GetAuthorOtherTopics(author_id string, topic_id string) (to
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(author_id)
 	topic_objectId := bson.ObjectIdHex(topic_id)
-	err = mgodb.C("topics").Find(bson.M{"author_id": objectId, "_id": bson.M{"$nin": []bson.ObjectId{topic_objectId}}}).Limit(5).Sort("-last_reply_at").All(&topics)
+	err = mgodb.C("topics").Find(bson.M{"author_id": objectId,"deleted":false, "_id": bson.M{"$nin": []bson.ObjectId{topic_objectId}}}).Limit(5).Sort("-last_reply_at").All(&topics)
 	return topics, err
 }
-func (p *TopicModel) GetAuthorTopics(author_id string,limit int,skip int) (topics []Topic,topicss []byte, err error) {
+func (p *TopicModel) GetAuthorTopics(author_id string, limit int, skip int) (topics []Topic, topicss []byte, err error) {
 	var temps []TopciAndAuthor
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(author_id)
-	err = mgodb.C("topics").Find(bson.M{"author_id": objectId}).Skip(skip).Limit(limit).Sort("-create_at").All(&topics)
+	err = mgodb.C("topics").Find(bson.M{"author_id": objectId,"deleted":false}).Skip(skip).Limit(limit).Sort("-create_at").All(&topics)
 	for _, v := range topics {
 		var temp TopciAndAuthor
 		temp.Topic = v
@@ -179,31 +180,31 @@ func (p *TopicModel) GetAuthorTopics(author_id string,limit int,skip int) (topic
 
 		temps = append(temps, temp)
 	}
-	topicss, _ = json.Marshal(temps)	
-	return topics,topicss, err
+	topicss, _ = json.Marshal(temps)
+	return topics, topicss, err
 }
-func (p *TopicModel) GetReplyTopics(author_id string,limit int,skip int,most int) (topicss []byte, err error) {
+func (p *TopicModel) GetReplyTopics(author_id string, limit int, skip int, most int) (topicss []byte, err error) {
 	var temps []TopciAndAuthor
 	var replies []Reply
 	var topic_ids map[bson.ObjectId]int
 	var topic_id_ints []bson.ObjectId
-	topic_ids=make(map[bson.ObjectId]int)
+	topic_ids = make(map[bson.ObjectId]int)
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(author_id)
-	err = mgodb.C("replies").Find(bson.M{"author_id": objectId}).Sort("-create_at").Skip(skip).Limit(limit).All(&replies)
-	for i:=0;i<len(replies);i++ {
-		if _, ok := topic_ids[replies[i].Topic_id];ok {
-		}else{
-			topic_ids[replies[i].Topic_id]=len(topic_ids)+1
-			topic_id_ints=append(topic_id_ints,replies[i].Topic_id)
-		}	
-		if(len(topic_ids)==most){
-			break;
+	err = mgodb.C("replies").Find(bson.M{"author_id": objectId,"deleted":false}).Sort("-create_at").Skip(skip).Limit(limit).All(&replies)
+	for i := 0; i < len(replies); i++ {
+		if _, ok := topic_ids[replies[i].Topic_id]; ok {
+		} else {
+			topic_ids[replies[i].Topic_id] = len(topic_ids) + 1
+			topic_id_ints = append(topic_id_ints, replies[i].Topic_id)
+		}
+		if len(topic_ids) == most {
+			break
 		}
 	}
-	for j:=0;j< len(topic_id_ints);j++ {
-		topic,err2:=topicModel.GetTopicById(topic_id_ints[j].Hex())
-		if(err2==nil&&topic.Author_id.Hex()!=""){		
+	for j := 0; j < len(topic_id_ints); j++ {
+		topic, err2 := topicModel.GetTopicById(topic_id_ints[j].Hex())
+		if err2 == nil && topic.Author_id.Hex() != "" {
 			var temp TopciAndAuthor
 			temp.Topic = topic
 			author, _ := userModel.GetUserById(topic.Author_id.Hex())
@@ -212,8 +213,8 @@ func (p *TopicModel) GetReplyTopics(author_id string,limit int,skip int,most int
 				reply, _ := replyModel.GetReplyById(topic.Last_reply.Hex())
 				temp.Reply = reply
 			}
-			temps = append(temps, temp)	
-		}		
+			temps = append(temps, temp)
+		}
 	}
 	topicss, _ = json.Marshal(temps)
 	return topicss, err
@@ -250,5 +251,15 @@ func (p *TopicModel) SetTop(id string, value bool) (err error) {
 			"$set": bson.M{"top": value},
 		})
 	log.Println(err)
+	return err
+}
+func (p *TopicModel) Delete( id string) (err error) {
+
+	objectId := bson.ObjectIdHex(id)
+	mgodb := db.MogSession.DB("egg_cnode")
+	err = mgodb.C("topics").Update(bson.M{"_id": objectId},
+		bson.M{
+			"$set": bson.M{"update_at": time.Now(), "deleted": true},
+		})
 	return err
 }

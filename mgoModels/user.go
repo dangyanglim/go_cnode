@@ -12,41 +12,47 @@ import (
 //"log"
 
 type User struct {
-	Id                bson.ObjectId `bson:"_id"`
-	Name              string        `json:"name"`
-	Loginname         string        `json:"loginname"`
-	Pass              string        `json:"pass,omitempty"`
-	Email             string        `json:"email"`
-	Avatar            string        `json:"avatar" `
-	AccessToken       string        `json:"accessToken"`
-	Score             uint          `json:"score"`
-	Collect_topic_count uint         `json:"collect_topic_count"`
-	Topic_count uint         `json:"topic_count"`
-	Reply_count uint         `json:"reply_count"`
-	Active            bool          `json:"active"`
-	Is_block          bool          `json:"is_block"`
-	GithubUsername    string        `json:"githubUsername,omitempty"`
-	GithubAccessToken string        `json:"githubAccessToken,omitempty"`
-	GithubId          int           `json:"githubId,omitempty"`
-	Url             string        `json:"url"`
-	Location             string        `json:"location"`
-	Weibo             string        `json:"weibo"`
-	Create_at        time.Time     `bson:"create_at"`
-	Is_star            string        `json:"is_star"`
+	Id                  bson.ObjectId `bson:"_id"`
+	Name                string        `json:"name"`
+	Loginname           string        `json:"loginname"`
+	Pass                string        `json:"pass,omitempty"`
+	Email               string        `json:"email"`
+	Avatar              string        `json:"avatar" `
+	AccessToken         string        `json:"accessToken"`
+	Score               uint          `json:"score"`
+	Collect_topic_count uint          `json:"collect_topic_count"`
+	Topic_count         uint          `json:"topic_count"`
+	Reply_count         uint          `json:"reply_count"`
+	Active              bool          `json:"active"`
+	Is_block            bool          `json:"is_block"`
+	GithubUsername      string        `json:"githubUsername,omitempty"`
+	GithubAccessToken   string        `json:"githubAccessToken,omitempty"`
+	Messages_count      int        `json:"messages_count,omitempty"`
+	GithubId            int           `json:"githubId,omitempty"`
+	Url                 string        `json:"url"`
+	Location            string        `json:"location"`
+	Weibo               string        `json:"weibo"`
+	Create_at           time.Time     `bson:"create_at"`
+	Is_star             string        `json:"is_star"`
 }
 type UserModel struct{}
-
-
+var messageModel = new(MessageModel)
 func (p *UserModel) GetUserByGithubId(id int) (user User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	log.Println(id)
 	err = mgodb.C("users").Find(bson.M{"GithubId": id}).One(&user)
+	if err==nil{
+		user.Messages_count,_=messageModel.GetMessagesCount(user.Id.Hex())
+	}
 	return user, err
 }
 func (p *UserModel) GetUserById(id string) (user User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	objectId := bson.ObjectIdHex(id)
 	err = mgodb.C("users").Find(bson.M{"_id": objectId}).One(&user)
+	if err==nil{
+		user.Messages_count,_=messageModel.GetMessagesCount(id)
+	}	
 	return user, err
 }
 func (p *UserModel) GetUserTops(limit int) (users []User, err error) {
@@ -57,6 +63,9 @@ func (p *UserModel) GetUserTops(limit int) (users []User, err error) {
 func (p *UserModel) GetUserByName(name string) (user User, err error) {
 	mgodb := db.MogSession.DB("egg_cnode")
 	err = mgodb.C("users").Find(bson.M{"name": name}).One(&user)
+	if err==nil{
+		user.Messages_count,_=messageModel.GetMessagesCount(user.Id.Hex())
+	}	
 	return user, err
 }
 func (p *UserModel) ActiveUserByName(name string) (err error) {
@@ -82,7 +91,7 @@ func (p *UserModel) NewAndSave(name string, loginname string, email string, pass
 		Email:       email,
 		Active:      active,
 		AccessToken: u2.String(),
-		Create_at: time.Now(),
+		Create_at:   time.Now(),
 	}
 	err = mgodb.C("users").Insert(&user)
 	log.Println(err)
@@ -101,7 +110,7 @@ func (p *UserModel) GithubNewAndSave(name string, loginname string, email string
 		Active:      active,
 		AccessToken: u2.String(),
 		GithubId:    githubId,
-		Create_at: time.Now(),
+		Create_at:   time.Now(),
 	}
 	err = mgodb.C("users").Insert(&user)
 	log.Println(err)

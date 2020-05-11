@@ -53,8 +53,8 @@
               {{ if .user.Loginname}}
               <li>
                   <a href='/my/messages'>
-                    {{if .cuuser.Messages_count}}
-                      <span class='big messages_count'>{{.cuuser.Messages_count }}</span>
+                    {{if .user.Messages_count}}
+                      <span class='big messages_count'>{{.user.Messages_count }}</span>
                     {{end}}
                     未读消息
                   </a>
