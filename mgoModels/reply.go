@@ -36,14 +36,13 @@ type ReplyAndAuthor struct {
 type ReplyModel struct{}
 
 func (p *ReplyModel) GetReplyById(id string) (reply Reply, err error) {
-	mgodb := db.MogSession.DB("egg_cnode")
+	mgodb:=db.Mgodb
 	objectId := bson.ObjectIdHex(id)
 	err = mgodb.C("replies").Find(bson.M{"_id": objectId,"deleted":false}).One(&reply)
 	return reply, err
 }
 func (p *ReplyModel) GetRepliesByTopicId(id string) (replies []Reply, replyAndAuthor []ReplyAndAuthor, err error) {
-	//var replyAndAuthor []ReplyAndAuthor
-	mgodb := db.MogSession.DB("egg_cnode")
+	mgodb:=db.Mgodb
 	objectId := bson.ObjectIdHex(id)
 	err = mgodb.C("replies").Find(bson.M{"topic_id": objectId,"deleted":false}).Sort("_id").All(&replies)
 	for _, v := range replies {
@@ -75,7 +74,7 @@ func (p *ReplyModel) NewAndSave(content string, topic_id string, user_id string,
 		object_reply_id := bson.ObjectIdHex(reply_id)
 		reply.Reply_id = object_reply_id
 	}
-	mgodb := db.MogSession.DB("egg_cnode")
+	mgodb:=db.Mgodb
 	err = mgodb.C("replies").Insert(&reply)
 
 	return reply, err
@@ -84,7 +83,7 @@ func (p *ReplyModel) Update(content string, reply_id string) (err error) {
 
 	objectId := bson.ObjectIdHex(reply_id)
 
-	mgodb := db.MogSession.DB("egg_cnode")
+	mgodb:=db.Mgodb
 	err = mgodb.C("replies").Update(bson.M{"_id": objectId},
 		bson.M{
 			"$set": bson.M{"update_at": time.Now(), "content": content},
@@ -95,7 +94,7 @@ func (p *ReplyModel) Update(content string, reply_id string) (err error) {
 func (p *ReplyModel) Delete( reply_id string) (err error) {
 
 	objectId := bson.ObjectIdHex(reply_id)
-	mgodb := db.MogSession.DB("egg_cnode")
+	mgodb:=db.Mgodb
 	err = mgodb.C("replies").Update(bson.M{"_id": objectId},
 		bson.M{
 			"$set": bson.M{"update_at": time.Now(), "deleted": true},
@@ -103,7 +102,7 @@ func (p *ReplyModel) Delete( reply_id string) (err error) {
 	return err
 }
 func (p *ReplyModel) GetReplyByAuthorQueryCount(objectId bson.ObjectId) (count int, err error) {
-	mgodb := db.MogSession.DB("egg_cnode")
+	mgodb:=db.Mgodb
 
 	count, err = mgodb.C("replies").Find(bson.M{"author_id": objectId}).Count()
 

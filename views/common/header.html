@@ -35,7 +35,14 @@
     <script type="text/javascript" src="/public/javascripts/responsive.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
     <link rel="shortcut icon"  type="image/x-icon" href="http://fenghuangyu.cn:9035/public/images/cnode_icon_32.png"/>
-    
+    <script>
+      //头像获取不到时候显示默认图片
+      $(document).ready(function () {
+            $('.ximg').one('error',function(){
+            $(this).attr('src', "http://www.gravatar.com/avatar/81f36fbf3b658c6a2330ca6840f7cb12?size=48");
+        });
+    });
+    </script>   
 </head>
 <body>
     <div class='navbar'>

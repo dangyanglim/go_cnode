@@ -29,7 +29,7 @@
         </div>
         {{else}}
         {{if .action }}
-        <form id='create_topic_form' action='/topic/{{.topic_id}}/edit' method='post'>
+        <form id='create_topic_form' action='/edit/topic/{{.topic_id}}' method='post'>
           {{else}}
           <form id='create_topic_form' action='/topic/create' method='post'>
             {{end}}
@@ -40,7 +40,11 @@
                 <option value="">
                   请选择</option>
                 {{range $i, $v :=.tabs}}
+                {{if eq $.tab $v.value}}
+                <option value="{{$v.value}}" selected>{{$v.text}}</option>
+                {{else}}
                 <option value="{{$v.value}}" >{{$v.text}}</option>
+                {{end}}
                 {{end}}
                 <!-- <%
                 var tabValue = '';
@@ -107,7 +111,7 @@
         alert('主题不能为空！');
         $('.submit_btn').button('reset');
         return false;        
-      }
+      }     
     });
     // END 版块选择的检查，必须选择
     // 选择招聘版块时，给出提示

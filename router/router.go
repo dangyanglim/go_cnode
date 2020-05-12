@@ -45,6 +45,8 @@ func InitRouter() *gin.Engine {
 	router.GET("/getstart", site.Getstart)
 	router.GET("/topic/:id", topic.Index)
 	router.GET("/topic/:id/top", topic.Top)
+	router.GET("/topic/:id/edit", topic.ShowEdit)
+	router.POST("/edit/topic/:id", topic.Update)
 	router.POST("/delete/topic/:id", topic.Detele)
 	router.GET("/topics/create", topic.ShowCreate)
 	router.POST("/topic/create", topic.Create)

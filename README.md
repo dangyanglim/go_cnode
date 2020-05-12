@@ -24,7 +24,7 @@ $ redis-server                     # 要安装redis
 $ go run main.go                   # 访问 http://localhost:9035
 ```
 #### 功能介绍
-- Github登录  
+- 邮箱注册/Github第三方注册  
 - Go 模块管理  
 - 后台 Gin+mongodb+redis
 - 前台 bootstrap+jquery+渲染模板  

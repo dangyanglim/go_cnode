@@ -10,12 +10,12 @@ import (
 	"go_cnode/mgoModels"
 	//"github.com/dangyanglim/go_cnode/service/mail"
 	"encoding/json"
-	"go_cnode/service/cache"
 	"github.com/gin-gonic/gin"
-	"github.com/tommy351/gin-sessions"
-	"strings"
 	"github.com/russross/blackfriday"
-	"html/template"/*  */
+	"github.com/tommy351/gin-sessions"
+	"go_cnode/service/cache"
+	"html/template" /*  */
+	"strings"
 )
 
 var userModel = new(models.UserModel)
@@ -47,7 +47,7 @@ func Index(c *gin.Context) {
 	var no_reply_topics []models.Topic
 	type Temp struct {
 		Topic             models.Topic
-		LinkContent 		template.HTML
+		LinkContent       template.HTML
 		Author            models.User
 		Replies           []models.Reply
 		RepliyWithAuthors []models.ReplyAndAuthor
@@ -61,16 +61,16 @@ func Index(c *gin.Context) {
 	id := c.Param("id")
 	topic, author, replies, repliyWithAuthors, _ := topicModel.GetTopicByIdWithReply(id)
 	temp.Author = author
-	topic.Content=strings.Replace(topic.Content, "\r\n", "<br/>",-1 )
+	topic.Content = strings.Replace(topic.Content, "\r\n", "<br/>", -1)
 	//temp.LinkContent=topic.Content
-	temp.LinkContent= template.HTML(blackfriday.Run([]byte(topic.Content)))
+	temp.LinkContent = template.HTML(blackfriday.Run([]byte(topic.Content)))
 	temp.Topic = topic
 	temp.Replies = replies
 	NoOfRepliy := len(replies)
 	temp.RepliyWithAuthors = repliyWithAuthors
 	no_reply_topics2, err2 := cache.Get("no_reply_topics")
 	json.Unmarshal(no_reply_topics2.([]byte), &no_reply_topics)
-	
+
 	if err2 != nil {
 		no_reply_topics, _ = topicModel.GetTopicNoReply()
 		no_reply_topics_json, _ := json.Marshal(no_reply_topics)
@@ -98,28 +98,28 @@ func Top(c *gin.Context) {
 		name = session.Get("loginname").(string)
 		user, _ = userModel.GetUserByName(name)
 	}
-	if user.Name!="admin"{
+	if user.Name != "admin" {
 		c.HTML(http.StatusOK, "notify", gin.H{
 			"error": "没权限",
 		})
-		return		
+		return
 	}
-	 id := c.Param("id")
-	 topic,err:=topicModel.GetTopicById(id)
-	 if err!=nil{
+	id := c.Param("id")
+	topic, err := topicModel.GetTopicById(id)
+	if err != nil {
 		c.HTML(http.StatusOK, "notify", gin.H{
 			"error": "话题不存在",
 		})
-		return		 
-	 }
-	 topicModel.SetTop(id,!topic.Top)
-	 msg:=""
-	 if topic.Top{
+		return
+	}
+	topicModel.SetTop(id, !topic.Top)
+	msg := ""
+	if topic.Top {
 		msg = "此话题取消置顶成功。"
-	 }else{
+	} else {
 		msg = "此话题置顶成功。"
-	 }
-	 
+	}
+
 	c.HTML(http.StatusOK, "notify", gin.H{
 		"success": msg,
 	})
@@ -134,28 +134,139 @@ func Detele(c *gin.Context) {
 	}
 	var msg struct {
 		Message string `json:"message"`
-		Success bool `json:"success"`
-	}	
-	 id := c.Param("id")
-	 topic,err:=topicModel.GetTopicById(id)
+		Success bool   `json:"success"`
+	}
+	id := c.Param("id")
+	topic, err := topicModel.GetTopicById(id)
 
-	 if err!=nil{
+	if err != nil {
 		msg.Message = "此话题不存在"
-		msg.Success=false
+		msg.Success = false
 		c.JSON(http.StatusOK, msg)
-		return		 
-	 }
-	 if topic.Author_id.Hex()!=user.Id.Hex() {
+		return
+	}
+	if topic.Author_id.Hex() != user.Id.Hex() {
 		msg.Message = "无权限"
-		msg.Success=false
+		msg.Success = false
 		c.JSON(http.StatusForbidden, msg)
-		return			 
-	 }
+		return
+	}
 
-	 topicModel.Delete(id)
-	 msg.Message = "话题删除成功"
-	 msg.Success=true
-	 c.JSON(http.StatusOK, msg)
+	topicModel.Delete(id)
+	msg.Message = "话题删除成功"
+	msg.Success = true
+	c.JSON(http.StatusOK, msg)
+}
+func ShowEdit(c *gin.Context) {
+	session := sessions.Get(c)
+	var name string
+	user := models.User{}
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
+	var msg struct {
+		Message string `json:"message"`
+		Success bool   `json:"success"`
+	}
+	id := c.Param("id")
+	topic, err := topicModel.GetTopicById(id)
+
+	if err != nil {
+		msg.Message = "此话题不存在"
+		msg.Success = false
+		c.JSON(http.StatusNotFound, msg)
+		return
+	}
+	if topic.Author_id.Hex() != user.Id.Hex() {
+		msg.Message = "对不起，你不能编辑此话题"
+		msg.Success = false
+		c.JSON(http.StatusForbidden, msg)
+		return
+	}
+	tabs := [3]map[string]string{{"value": "share", "text": "分享"}, {"value": "ask", "text": "问答"}, {"value": "job", "text": "招聘"}}
+	c.HTML(http.StatusOK, "edit", gin.H{
+		"user":     user,
+		"action":   "edit",
+		"topic_id": topic.Id.Hex(),
+		"title":    topic.Title,
+		"content":  topic.Content,
+		"tab":      topic.Tab,
+		"tabs":     tabs,
+		"config": gin.H{
+			"description": "CNode：Node.js专业中文社区",
+		},
+	})
+
+}
+func Update(c *gin.Context) {
+	session := sessions.Get(c)
+	var name string
+	user := models.User{}
+	if nil != session.Get("loginname") {
+		name = session.Get("loginname").(string)
+		user, _ = userModel.GetUserByName(name)
+	}
+	var msg struct {
+		Message string `json:"message"`
+		Success bool   `json:"success"`
+	}
+	id := c.Param("id")
+	topic, err := topicModel.GetTopicById(id)
+
+	if err != nil {
+		msg.Message = "此话题不存在"
+		msg.Success = false
+		c.JSON(http.StatusNotFound, msg)
+		return
+	}
+	if topic.Author_id.Hex() != user.Id.Hex() {
+		msg.Message = "对不起，你不能编辑此话题"
+		msg.Success = false
+		c.JSON(http.StatusForbidden, msg)
+		return
+	}
+	tabs := [3]map[string]string{{"value": "share", "text": "分享"}, {"value": "ask", "text": "问答"}, {"value": "job", "text": "招聘"}}
+	tab := c.Request.FormValue("tab")
+	title := c.Request.FormValue("title")
+	content := c.Request.FormValue("content")
+	// 验证
+	editError := ""
+	if title == "" {
+		editError = "标题不能是空的。"
+	}
+	if len(title) < 5 || len(title) > 100 {
+		editError = "标题字数太多或太少。"
+	}
+	if tab == "" {
+		editError = "必须选择一个版块"
+	}
+	if content == "" {
+		editError = "内容不可为空。"
+	}
+	if editError != "" {
+		c.HTML(http.StatusOK, "edit", gin.H{
+			"user":      user,
+			"editError": editError,
+			"action":    "edit",
+			"topic_id":  topic.Id.Hex(),
+			"title":     topic.Title,
+			"content":   topic.Content,
+			"tab":       topic.Tab,
+			"tabs":      tabs,
+			"config": gin.H{
+				"description": "CNode：Node.js专业中文社区",
+			},
+		})
+		return
+	}
+	topic.Title=title
+	topic.Tab=tab
+	topic.Content=content
+	topicModel.Update(topic)
+	url := "/topic/" + topic.Id.Hex()
+	c.Redirect(301, url)
+
 }
 func Create(c *gin.Context) {
 	session := sessions.Get(c)
@@ -174,10 +285,12 @@ func Create(c *gin.Context) {
 	url := "/topic/" + topic.Id.Hex()
 	c.Redirect(301, url)
 }
+
 const (
-	upload_path string = "./public/upload/"
+	upload_path  string = "./public/upload/"
 	upload_path2 string = "/public/upload/"
 )
+
 func Upload(c *gin.Context) {
 	session := sessions.Get(c)
 	var name string
@@ -192,7 +305,6 @@ func Upload(c *gin.Context) {
 	//picName := c.Request.FormValue("name")
 	file, _ := c.FormFile("file")
 
-
 	//创建文件
 	// fW, err := os.Create(upload_path + file.Filename)
 	// if err != nil {
@@ -205,14 +317,13 @@ func Upload(c *gin.Context) {
 	// 	fmt.Println("文件保存失败")
 	// 	return
 	// }
-	c.SaveUploadedFile(file,upload_path + file.Filename)
+	c.SaveUploadedFile(file, upload_path+file.Filename)
 	var msg struct {
-		Success    bool `json:"success"`
-		Url string `json:"url"`
+		Success bool   `json:"success"`
+		Url     string `json:"url"`
 	}
 	msg.Success = true
-	msg.Url=upload_path2 + file.Filename	
+	msg.Url = upload_path2 + file.Filename
 	c.JSON(http.StatusOK, msg)
-
 
 }
