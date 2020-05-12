@@ -350,7 +350,7 @@ func Index(c *gin.Context) {
 		cache.SetEx("no_reply_topics", no_reply_topics_json)
 	}
 	tops, _ := userModel.GetUserTops(10)
-	log.Println(user)
+
 	
 	c.HTML(http.StatusOK, "index", gin.H{
 		"title":           "布局页面",
