@@ -28,6 +28,7 @@ func InitRouter() *gin.Engine {
 	router.LoadHTMLGlob("views/**/*")
 	router.StaticFS("/public", http.Dir("./public"))
 	router.StaticFile("/favicon.ico", "./public/images/cnode_icon_32.png")
+	router.StaticFile("/19ITP3EmsT.txt", "./public/19ITP3EmsT.txt")//小程序
 	router.GET("/", site.Index)
 	router.GET("/about", site.About)
 	router.GET("/signup", sign.ShowSignup)
