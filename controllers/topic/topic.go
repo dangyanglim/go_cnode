@@ -35,6 +35,7 @@ func ShowCreate(c *gin.Context) {
 	c.HTML(http.StatusOK, "edit", gin.H{
 		"user": user,
 		"tabs": tabs,
+		"tab":  "share",
 		"config": gin.H{
 			"description": "CNode：Node.js专业中文社区",
 		},

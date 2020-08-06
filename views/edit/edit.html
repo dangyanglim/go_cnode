@@ -42,7 +42,7 @@
                 {{range $i, $v :=.tabs}}
                 {{if eq $.tab $v.value}}
                 <option value="{{$v.value}}" selected>{{$v.text}}</option>
-                {{else}}
+                {{else}} 
                 <option value="{{$v.value}}" >{{$v.text}}</option>
                 {{end}}
                 {{end}}
