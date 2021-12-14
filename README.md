@@ -3,7 +3,7 @@
 #### 项目介绍
 http://cnodejs.org/ 是一个用nodejs语言编写的开源论坛  
 打算是用golang语言仿写  
-项目部署在 http://fenghuangyu.cn:9035 账号密码admin   
+项目部署在 http://52.77.218.37:9035/ 账号密码admin   
 #### 安装
 go version 1.12.4  
 git version 2.19  
@@ -21,6 +21,7 @@ git版本>2.17
 $ git clone https://github.com/dangyanglim/go_cnode.git
 $ cd go_cnode
 $ redis-server                     # 要安装redis
+$ mongod --fork --logpath=/data/logs.log # 要安装mongodb
 $ go run main.go                   # 访问 http://localhost:9035
 ```
 #### 功能介绍
