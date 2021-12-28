@@ -17,14 +17,12 @@ replace google.golang.org/appengine => github.com/golang/appengine v1.5.0
 require (
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-contrib/cors v0.0.0-20190424000812-bd1331c62cae
-	github.com/gin-gonic/gin v1.3.0
-	github.com/go-sql-driver/mysql v1.4.1
+	github.com/gin-gonic/gin v1.7.0
 	github.com/gorilla/sessions v1.1.3 // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/tommy351/gin-sessions v0.0.0-20150617141853-353060947eb6
-	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
-	google.golang.org/appengine v1.5.0 // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 )
